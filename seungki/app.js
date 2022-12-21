@@ -1,5 +1,4 @@
 const http = require("http");
-// Cross-Origin Resource Sharing 교차 출처 리소스 공유 정책
 
 require('dotenv').config();
 const express = require("express");
