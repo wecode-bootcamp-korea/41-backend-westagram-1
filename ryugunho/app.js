@@ -18,11 +18,11 @@ const dataSource = new DataSource({
     logging: process.env.DB_LOGGING
 });
 
-myDataSource.initialize().then(() => {
+dataSource.initialize().then(() => {
     console.log("Your database is on fire!!!");
 }).catch((err) => {
     console.log(err.message);
-    myDataSource.destroy();
+    dataSource.destroy();
 })
 
 app.use(express.json());
@@ -33,6 +33,29 @@ app.use(morgan("dev"));
 app.get("/ping", function(req, res) {
     res.status(200).json({ message: "pong" });
 })
+
+
+
+app.post("/user", async function(req, res) {
+    const user = req.body;
+    console.log(user);
+
+    const userData = await dataSource.query(
+        `
+        INSERT INTO users
+        (
+            email,
+            profile_image,
+            password
+        )
+        VALUES (?, ?, ?)
+        `
+    , [ user.email, user.profile_image, user.password ]);
+
+    console.log(userData);
+    res.status(200).json({ message: "userCreated!" });
+})
+
 
 port = process.env.PORT;
 
