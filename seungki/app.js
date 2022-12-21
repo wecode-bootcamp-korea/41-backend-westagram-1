@@ -1,13 +1,16 @@
-const express = require("express");
-
+const http = require("http");
 // Cross-Origin Resource Sharing 교차 출처 리소스 공유 정책
+
+require('dotenv').config();
+const express = require("express");
 const cors = require("cors"); 
 const morgan = require("morgan");
-
-const dotenv = require("dotenv");
-dotenv.config()
-
 const { DataSource } = require("typeorm");
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
 
 const mysqlDatabase = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
@@ -27,13 +30,9 @@ mysqlDatabase.initialize()
   mysqlDatabase.destroy()
 })
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-app.use(morgan("dev"));
 
 app.get("/ping", (req, res) => {
-res.status(200).json({"message" : "pong"});
+res.status(200).json({"message" : "pongsssss"});
 });
 
 
