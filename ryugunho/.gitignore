@@ -5,6 +5,10 @@
 ### Environment Variables ###
 .env
 
+### Node Files ###
+node_modules 
+test.js
+
 ### Linux ###
 *~
 

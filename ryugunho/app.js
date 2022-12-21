@@ -1,14 +1,14 @@
+const http = require("http");
+
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const morgan = require("morgan");
 const { DataSource } = require("typeorm");
 
 const app = express();
 
-dotenv.config();
-
-const myDataSource = new DataSource({
+const dataSource = new DataSource({
     type: process.env.DB_TYPE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -30,7 +30,15 @@ app.use(cors());
 app.use(morgan("dev"));
 
 
+app.get("/ping", function(req, res) {
+    res.status(200).json({ message: "pong" });
+})
+
 port = process.env.PORT;
 
 
 app.listen(port);
+
+
+
+
