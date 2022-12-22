@@ -19,7 +19,6 @@ const appDataSource = new DataSource({
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
 });
-
 appDataSource
   .initialize()
   .then(() => {
@@ -37,7 +36,12 @@ app.use(express.json());
 
 // health check
 app.get("/ping", (req, res) => {
-  res.status(201).json({ message: "pong" });
+  res.status(200).json({ message: "pong" });
+});
+
+// 2. 회원가입
+app.get("/users", async (req, res) => {
+  res.status(200).json({ message: "userCreated" });
 });
 
 const start = async () => {
