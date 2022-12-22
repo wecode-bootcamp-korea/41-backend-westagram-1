@@ -18,11 +18,11 @@ const dataSource = new DataSource({
     logging: process.env.DB_LOGGING
 });
 
-myDataSource.initialize().then(() => {
+dataSource.initialize().then(() => {
     console.log("Your database is on fire!!!");
 }).catch((err) => {
     console.log(err.message);
-    myDataSource.destroy();
+    dataSource.destroy();
 })
 
 app.use(express.json());
