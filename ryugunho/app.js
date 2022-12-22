@@ -8,7 +8,7 @@ const { DataSource } = require("typeorm");
 
 const app = express();
 
-const dataSource = new DataSource({
+const appDataSource = new DataSource({
     type: process.env.DB_TYPE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -18,11 +18,11 @@ const dataSource = new DataSource({
     logging: process.env.DB_LOGGING
 });
 
-dataSource.initialize().then(() => {
+appDataSource.initialize().then(() => {
     console.log("Your database is on fire!!!");
 }).catch((err) => {
     console.log(err.message);
-    dataSource.destroy();
+    appDataSource.destroy();
 })
 
 app.use(express.json());
@@ -40,7 +40,7 @@ app.post("/user", async function(req, res) {
     const user = req.body;
     console.log(user);
 
-    const userData = await dataSource.query(
+    const userData = await appDataSource.query(
         `
         INSERT INTO users
         (
