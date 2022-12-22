@@ -29,11 +29,28 @@ mysqlDatabase.initialize()
   mysqlDatabase.destroy()
 })
 
-
+// Health Check
 app.get("/ping", (req, res) => {
 res.status(200).json({"message" : "pongsssss"});
 });
 
+
+// 유저 회원가입
+app.post("/email_signup", async (req, res) => {
+  const { name, email, profileImage, password } = req.body;
+
+  await mysqlDatabase.query(
+    `INSERT INTO users(
+      name,
+      email,
+      profile_image,
+      password
+    ) VALUES (?, ?, ?, ?);
+    `,
+    [ name, email, profileImage, password ]
+  );
+  res.status(201).json({message : "userCreated"})
+})
 
 const PORT = process.env.PORT;
 
