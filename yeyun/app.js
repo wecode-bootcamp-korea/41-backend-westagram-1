@@ -8,9 +8,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const { DataSource } = require("typeorm");
 
-//// custom package
-const api = require("");
-
+// custom package
 const app = express();
 
 const appDataSource = new DataSource({
@@ -31,7 +29,6 @@ appDataSource
     console.log(err.message);
   });
 
-const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors());
