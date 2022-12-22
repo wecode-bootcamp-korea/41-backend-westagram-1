@@ -42,13 +42,11 @@ app.post("/user", async function(req, res) {
 
     const userData = await appDataSource.query(
         `
-        INSERT INTO users
-        (
+        INSERT INTO users (
             email,
             profile_image,
             password
-        )
-        VALUES (?, ?, ?)
+        ) VALUES (?, ?, ?)
         `
     , [ user.email, user.profile_image, user.password ]);
 
