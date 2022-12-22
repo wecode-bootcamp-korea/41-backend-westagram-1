@@ -39,11 +39,6 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
 });
 
-// 2. 회원가입
-app.get("/users", async (req, res) => {
-  res.status(200).json({ message: "userCreated" });
-});
-
 const start = async () => {
   try {
     app.listen(PORT, () => console.log(`Server is listening on ${PORT}`));
