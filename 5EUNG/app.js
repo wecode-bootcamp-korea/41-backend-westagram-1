@@ -177,13 +177,3 @@ const start = async () => {
 start()
 
 
-//ddddd
-
-
-
-
-///주석 마지막 추가
-
-//주석 찐 막 추가
-
-//ddddddddd
