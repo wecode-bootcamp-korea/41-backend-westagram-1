@@ -26,18 +26,18 @@ mysqlDataSource.initialize()
  app.use(morgan('dev'));
  app.use(express.json());
 
-// health check
-//app.get("/ping", cors(), function (req, res, next) {
-//    res.json({ message: "pong"});
-//});
+
+app.get("/ping", cors(), function (req, res, next) {
+    res.json({ message: "pong"});
+});
 
 
 // CURS - C
-app.post("/authors", async (req, res, next) => {
+app.post("/users", async (req, res, next) => {
     const { first_name, last_name, age} = req.body
      
     await mysqlDataSource.query(
-        `INSERT INTO authors(
+        `INSERT INTO users(
                  first_name,
                  last_name,
                  age
