@@ -52,7 +52,7 @@ app.post("/user", async function(req, res) {
 })
 
 app.get("/user/post/:id", async function(req, res) {
-    const userId = req.params.id;
+    const { userId } = req.params;
     const userPostingData = await appDataSource.query(
         `
         SELECT 
@@ -76,7 +76,7 @@ app.get("/user/post/:id", async function(req, res) {
 // Update 엔드포인트 구현했습니다.
 
 app.patch("/user/post/:id", async function(req, res) {
-    const postId = req.params.id; 
+    const { postId } = req.params; 
     const { title, content, imageUrl }= req.body;
 
     const up = await appDataSource.query(`
@@ -108,7 +108,7 @@ app.patch("/user/post/:id", async function(req, res) {
 
 // 게시물 삭제 엔드포인트 구현
 app.delete("/post/:id", async function(req, res) {
-    const postId = req.params.id;
+    const { postId } = req.params;
 
     await appDataSource.query(`
         DELETE FROM likes
@@ -129,7 +129,7 @@ app.delete("/post/:id", async function(req, res) {
 // 좋아요 엔드포인트 구현
 
 app.post("/likes/:id", async function (req, res) {
-    const postId = req.body.postId; 
+    const { postId } = req.body; 
 
     const { userId } = req.params;
 
