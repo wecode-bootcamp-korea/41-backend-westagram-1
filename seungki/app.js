@@ -29,17 +29,151 @@ mysqlDatabase.initialize()
   mysqlDatabase.destroy()
 })
 
-
+// Health Check
 app.get("/ping", (req, res) => {
-res.status(200).json({"message" : "pongsssss"});
+res.status(200).json({ "message" : "pongsssss"} );
 });
 
 
-const PORT = process.env.PORT;
+// 유저 회원가입
+app.post("/email_signup", async (req, res) => {
+  const { name, email, profileImage, password } = req.body;
 
+  await mysqlDatabase.query(
+    `INSERT INTO users(
+      name,
+      email,
+      profile_image,
+      password
+    ) VALUES (?, ?, ?, ?);
+    `,
+    [ name, email, profileImage, password ]
+  );
+  res.status(201).json({ message : "userCreated" })
+})
+
+// 게시물 등록하기
+app.post("/post_created", async (req, res) => {
+  const { title, content, postImage, userId } = req.body;
+
+  await mysqlDatabase.query(
+    `INSERT INTO posts(
+      title,
+      content,
+      post_image,
+      user_id
+    ) VALUES (?, ?, ?, ?);
+    `,
+    [ title, content, postImage, userId]
+  );
+  res.status(201).json({ message: "postCreated" })
+})
+
+// 전체 게시글 조회하기
+app.get("/posts", async (req, res) => {
+
+  await mysqlDatabase.query(
+    `SELECT 
+      u.id AS userId,
+      u.profile_image AS userProfileImage,
+      p.id AS postingId,
+      p.post_image AS postingImageUrl,
+      p.content AS postingContent
+    FROM users u
+    INNER JOIN posts p ON u.id = p.user_id`
+    ,(err, rows) => {
+      res.status(200).json({ data : rows })
+    }
+  )
+})
+
+// 유저의 게시물 조회하기
+app.get("/user_post/userId/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  const [ userPostList ] = await mysqlDatabase.query(
+    `SELECT 
+      u.id AS userId,
+      u.profile_image AS userProfileImage,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          "postingId", p.id,
+          "postingImageUrl", p.post_image,
+          "postingContent", p.content
+        )
+      ) AS postings
+    FROM users u
+    INNER JOIN posts p ON u.id = p.user_id
+    WHERE u.id = ${userId}
+    GROUP BY u.id;
+    `, 
+  );
+  res.status(200).json({ data : userPostList })
+})
+
+// 게시글 수정하기
+app.patch("/post_modify/postId/:postId", async (req, res) => {
+  const { title, content, postImage } = req.body;
+  const { postId } = req.params;
+
+  await mysqlDatabase.query(
+    `UPDATE posts
+      SET title = ?,
+          content = ?,
+          post_image = ?
+      WHERE id = ${postId}
+      `,
+      [ title, content, postImage]
+  )
+
+  const [ postModify ] = await mysqlDatabase.query(
+    `SELECT
+      u.id AS user_id,
+      u.name AS userName,
+      p.id AS postingId,
+      p.title AS postingTitle,
+      p.content AS postingContent
+    FROM users u
+    INNER JOIN posts p ON u.id = p.user_id
+    WHERE p.id = ${postId}
+    `,
+  );
+  res.status(200).json({ data : postModify })
+})
+
+// 게시글 삭제하기
+app.delete("/post_delete/postId/:postId", async (req, res) => {
+  const { postId } = req.params;
+
+  await mysqlDatabase.query(
+    `DELETE FROM posts
+    WHERE posts.id = ${postId}
+    `,
+  );
+
+  res.status(200).json({ message : "postingDeleted" })
+})
+
+// 좋아요 누르기
+app.post("/likes", async (req, res) => {
+  const { userId, postId } = req.body;
+
+  await mysqlDatabase.query(
+    `INSERT INTO likes(
+      user_id,
+      post_id
+    ) VALUES (?, ?);
+    `,
+    [ userId, postId ]
+  );
+  res.status(200).json({ message : "likeCreated"})
+})
+
+
+const PORT = process.env.PORT;
 const start = async () => {
   try {
-    app.listen(PORT, () => console.log(`server is listening on ${PORT}🔥🔥🔥🔥🔥🔥🔥🔥`))
+    app.listen(PORT, () => console.log(`server is listening on ${PORT}🔥🔥🔥🔥🔥🔥🔥`))
   } catch (err) {
     console.error(err)
   }
