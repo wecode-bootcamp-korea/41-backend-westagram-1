@@ -1,9 +1,9 @@
-const http = require("http");
-
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+
 const { DataSource } = require("typeorm");
 
 const app = express();
@@ -28,7 +28,6 @@ appDataSource.initialize().then(() => {
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
-
 
 app.get("/ping", function(req, res) {
     res.status(200).json({ message: "pong" });
@@ -107,7 +106,6 @@ app.patch("/user/post/:id", async function(req, res) {
     res.status(200).json({ data: updatedPost });
 });
 
-
 // 게시물 삭제 엔드포인트 구현
 app.delete("/post/:id", async function(req, res) {
     const postId = req.params.id;
@@ -131,8 +129,9 @@ app.delete("/post/:id", async function(req, res) {
 // 좋아요 엔드포인트 구현
 
 app.post("/likes/:id", async function (req, res) {
-    const userId = req.params.id;
     const postId = req.body.postId; 
+
+    const { userId } = req.params;
 
     await appDataSource.query(`
         INSERT INTO likes
@@ -144,10 +143,7 @@ app.post("/likes/:id", async function (req, res) {
     res.status(201).json({ message: "likeCreated" });
 })
 
-
-
 port = process.env.PORT;
-
 
 app.listen(port);
 
