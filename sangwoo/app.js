@@ -29,9 +29,20 @@ myDataSource.initialize()
  app.use(express.json());
 
 
-// app.get("/ping", (req, res) => {
-    //     res.json({ message: "pong"});
-    // });
+// CURS - C
+app.post("/authors", async (req, res, next) => {
+    const { first_name, last_name, age} = req.body
+
+    await myDataSource.query(
+        `INSERT INTO authors(
+            first_name,
+            last_name,
+            age
+        ) VALUES (?, ?, ?);
+        `, [ first_name, last_name, age]
+    );
+    res.status(201).json({ message : "userCreated" });
+});
 
 app.get("/ping", cors(), function (req, res, next) {
     res.json({ message: "pong"});
