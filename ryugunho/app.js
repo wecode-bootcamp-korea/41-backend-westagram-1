@@ -8,7 +8,7 @@ const { DataSource } = require("typeorm");
 
 const app = express();
 
-const dataSource = new DataSource({
+const appDataSource = new DataSource({
     type: process.env.DB_TYPE,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -18,11 +18,11 @@ const dataSource = new DataSource({
     logging: process.env.DB_LOGGING
 });
 
-dataSource.initialize().then(() => {
+appDataSource.initialize().then(() => {
     console.log("Your database is on fire!!!");
 }).catch((err) => {
     console.log(err.message);
-    dataSource.destroy();
+    appDataSource.destroy();
 })
 
 app.use(express.json());
@@ -39,56 +39,13 @@ app.get("/ping", function(req, res) {
 app.post("/user", async function(req, res) {
     const user = req.body;
 
-    const userData = await dataSource.query(
+    const userData = await appDataSource.query(
         `
-        INSERT INTO users
-        (
-            name,
+        INSERT INTO users (
             email,
             profile_image,
             password
-        )
-        VALUES (?, ?, ?, ?)
-        `
-    , [ user.name, user.email, user.profile_image, user.password ]);
-
-    res.status(201).json({ message: "userCreated!" });
-})
-
-// 게시글 업로드 엔드포인트
-
-app.post("/post", async function(req, res) {
-    const post = req.body;
-
-    const postData = await dataSource.query(
-        `
-        INSERT INTO posts
-        (
-            title, 
-            content,
-            user_id,
-            imageUrl
-        )
-        VALUES (?, ?, ?, ?)
-        `
-    , [ post.title, post.content, post.user_id, post.imageUrl ]);
-
-    res.status(201).json({ message: "postCreated!" });
-})
-
-// 게시글 전체 보기 엔드포인트
-app.get("/post", async function(req, res) {
-    const posts = await dataSource.query(
-        `
-        SELECT 
-            users.id AS userId, 
-            users.profile_image AS userProfileImage,
-            posts.id AS postingId, posts.imageUrl AS postingImageUrl, 
-            posts.content AS postingContent
-
-        FROM posts
-        INNER JOIN users 
-        ON posts.user_id = users.id;
+        ) VALUES (?, ?, ?)
         `
     )
     

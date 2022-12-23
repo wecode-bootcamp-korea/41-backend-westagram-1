@@ -9,6 +9,9 @@
 node_modules 
 test.js
 
+### Database ###
+db/schema.sql
+
 ### Linux ###
 *~
 
@@ -751,3 +754,6 @@ FodyWeavers.xsd
 #
 #
 my_settings.py
+
+
+schema.sql
