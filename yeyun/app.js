@@ -1,14 +1,9 @@
-//// Built-in package
-const http = require("http");
-
-//// 3rd-party package
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const { DataSource } = require("typeorm");
 
-// custom package
 const app = express();
 
 const appDataSource = new DataSource({
@@ -37,13 +32,6 @@ app.use(express.json());
 // health check
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
-});
-
-////////////////
-//2. 회원가입/////
-///////////////
-app.get("/users", async (req, res) => {
-  res.status(200).json({ message: "userCreated" });
 });
 
 const start = async () => {
