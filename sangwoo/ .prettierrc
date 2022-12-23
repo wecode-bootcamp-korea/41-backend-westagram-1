@@ -1,6 +1,0 @@
-{
-  "trailingComma": "es5",  // 마지막에 , 붙이기
-  "tabWidth": 2,           // 탭 간격 2로 설정
-  "semi": true,            // 마지막에 ; 붙이기
-  "singleQuote": true      // " 대신 ' 사용
-}
