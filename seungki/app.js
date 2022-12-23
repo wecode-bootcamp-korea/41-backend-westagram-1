@@ -9,6 +9,7 @@ const { DataSource } = require('typeorm');
 const app = express();
 app.use(express.json());
 app.use(cors());
+
 app.use(morgan('dev'));
 
 const mysqlDatabase = new DataSource({
@@ -41,6 +42,7 @@ app.post('/email_signup', async (req, res) => {
 
   await mysqlDatabase.query(
     `INSERT INTO users(
+
         name,
         email,
         profile_image,
@@ -55,7 +57,6 @@ app.post('/email_signup', async (req, res) => {
 // 게시물 등록하기
 app.post('/post_created', async (req, res) => {
   const { title, content, postImage, userId } = req.body;
-
   await mysqlDatabase.query(
     `INSERT INTO posts(
         title,
