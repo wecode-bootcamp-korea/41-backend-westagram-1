@@ -1,16 +1,12 @@
-const http = require('http');
-
+//// 3rd-party package
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 
 const { DataSource } = require('typeorm');
-const api = require('./../api')
 
 const app = express();
-
-const { title } = require('process');
 
 const appDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
@@ -41,7 +37,8 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
-const server = http.createServer(app);
+
+// const server = http.createServer(app); //문제 없음 삭제해야지
 const PORT = process.env.PORT;
 
 const start = async () => {
