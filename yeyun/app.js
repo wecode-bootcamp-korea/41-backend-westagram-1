@@ -29,9 +29,25 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
-// health check
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
+});
+
+app.post("/users", async (req, res, next) => {
+  const { name, email, profile_image, passwords } = req.body;
+
+  await appDataSource.query(
+    `INSERT INTO users (
+      name,
+      email,
+      profile_image,
+      passwords
+    ) VALUES (?, ?, ?, ?);
+    `,
+    [name, email, profile_image, passwords]
+  );
+
+  res.status(201).json({ message: "userCreated" });
 });
 
 const start = async () => {
