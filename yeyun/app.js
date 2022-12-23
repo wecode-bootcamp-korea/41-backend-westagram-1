@@ -38,9 +38,10 @@ app.use(express.json());
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
 });
-/////////////
-//2. 회원가입//
-////////////
+
+////////////////
+//2. 회원가입/////
+///////////////
 app.get("/users", async (req, res) => {
   res.status(200).json({ message: "userCreated" });
 });
