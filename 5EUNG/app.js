@@ -1,5 +1,5 @@
-//// 3rd-party package
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -38,7 +38,6 @@ app.get("/ping", (req, res) => {
 });
 
 
-// const server = http.createServer(app); //문제 없음 삭제해야지
 const PORT = process.env.PORT;
 
 const start = async () => {
