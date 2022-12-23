@@ -46,16 +46,14 @@ app.post("/user", async function(req, res) {
             profile_image,
             password
         ) VALUES (?, ?, ?)
-        `
-    )
+        `, [ user.email, user.profile_image, user.password ]);
     
-    console.log(posts);
-    res.status(200).json({ data: posts });
+    res.status(200).json({ data: userData });
 })
 
 app.get("/user/post/:id", async function(req, res) {
     const userId = req.params.id;
-    const userPostingData = await dataSource.query(
+    const userPostingData = await appDataSource.query(
         `
         SELECT 
             u.id AS userId, 
@@ -81,7 +79,7 @@ app.patch("/user/post/:id", async function(req, res) {
     const postId = req.params.id; 
     const { title, content, imageUrl }= req.body;
 
-    const up = await dataSource.query(`
+    const up = await appDataSource.query(`
         UPDATE posts
             SET
                 title = ?,
@@ -90,9 +88,8 @@ app.patch("/user/post/:id", async function(req, res) {
             WHERE id = ?
     `
     , [ title, content, imageUrl, postId ]);
-    console.log(up);
 
-    const updatedPost = await dataSource.query(`
+    const updatedPost = await appDataSource.query(`
         SELECT
             u.id AS userId, 
             u.name AS userName, 
@@ -104,8 +101,7 @@ app.patch("/user/post/:id", async function(req, res) {
         ON u.id = p.user_id = 1
         WHERE p.id = ?
     `
-    , [ postId ]
-    );
+    , [ postId ]);
 
     res.status(200).json({ data: updatedPost });
 });
@@ -115,19 +111,18 @@ app.patch("/user/post/:id", async function(req, res) {
 app.delete("/post/:id", async function(req, res) {
     const postId = req.params.id;
 
-    await dataSource.query(`
+    await appDataSource.query(`
         DELETE FROM likes
         WHERE post_id = ?
     `
     , [ postId ]
     )
 
-    await dataSource.query(`
+    await appDataSource.query(`
         DELETE FROM posts
         WHERE posts.id = ?
     `,
-    [ postId ] 
-    )
+    [ postId ]);
 
     res.status(201).json({ message: "A post has been deleted"});
 });
@@ -138,13 +133,12 @@ app.post("/likes/:id", async function (req, res) {
     const userId = req.params.id;
     const postId = req.body.postId; 
 
-    await dataSource.query(`
+    await appDataSource.query(`
         INSERT INTO likes
             (user_id, post_id)
         VALUES (?, ?)
     `,
-    [ userId, postId ]
-    );
+    [ userId, postId ]);
 
     res.status(201).json({ message: "likeCreated" });
 })
