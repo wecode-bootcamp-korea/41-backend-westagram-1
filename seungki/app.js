@@ -103,9 +103,10 @@ app.get('/user_post/userId/:userId', async (req, res) => {
       ) AS postings
     FROM users u
     INNER JOIN posts p ON u.id = p.user_id
-    WHERE u.id = ${userId}
+    WHERE u.id = ?
     GROUP BY u.id;
-    `
+    `,
+        [userId]
     );
     res.status(200).json({ data: userPostList });
 });
@@ -120,9 +121,9 @@ app.patch('/post_modify/postId/:postId', async (req, res) => {
       SET title = ?,
           content = ?,
           post_image = ?
-      WHERE id = ${postId}
+      WHERE id = ?
       `,
-        [title, content, postImage]
+        [title, content, postImage, postId]
     );
 
     const [postModify] = await mysqlDatabase.query(
@@ -134,8 +135,9 @@ app.patch('/post_modify/postId/:postId', async (req, res) => {
       p.content AS postingContent
     FROM users u
     INNER JOIN posts p ON u.id = p.user_id
-    WHERE p.id = ${postId}
-    `
+    WHERE p.id = ?
+    `,
+        [postId]
     );
     res.status(200).json({ data: postModify });
 });
@@ -146,10 +148,10 @@ app.delete('/post_delete/postId/:postId', async (req, res) => {
 
     await mysqlDatabase.query(
         `DELETE FROM posts
-    WHERE posts.id = ${postId}
-    `
+    WHERE posts.id = ?
+    `,
+        [postId]
     );
-
     res.status(200).json({ message: 'postingDeleted' });
 });
 
@@ -157,14 +159,33 @@ app.delete('/post_delete/postId/:postId', async (req, res) => {
 app.post('/likes', async (req, res) => {
     const { userId, postId } = req.body;
 
-    await mysqlDatabase.query(
-        `INSERT INTO likes(
-      user_id,
-      post_id
-    ) VALUES (?, ?);
-    `,
+    const [likes] = await mysqlDatabase.query(
+        `SELECT
+        id
+      FROM likes
+      WHERE user_id =?
+      AND post_id =?
+      `,
         [userId, postId]
     );
+
+    if (!likes) {
+        await mysqlDatabase.query(
+            `INSERT INTO likes(
+            user_id,
+            post_id
+          ) VALUES (?, ?);
+          `,
+            [userId, postId]
+        );
+    } else {
+        await mysqlDatabase.query(
+            `DELETE FROM likes
+        WHERE likes.id = ?
+        `,
+            [likes.id]
+        );
+    }
     res.status(200).json({ message: 'likeCreated' });
 });
 
