@@ -168,7 +168,6 @@ app.post('/likes', async (req, res) => {
       `,
     [userId, postId]
   );
-  console.log(likes);
 
   if (!likes) {
     await mysqlDatabase.query(
