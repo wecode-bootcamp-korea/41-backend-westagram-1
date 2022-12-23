@@ -1,98 +1,97 @@
-const http = require("http");
+const http = require('http');
 
 require('dotenv').config();
-const express = require("express");
-const cors = require("cors"); 
-const morgan = require("morgan");
-const { DataSource } = require("typeorm");
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const { DataSource } = require('typeorm');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
 const mysqlDatabase = new DataSource({
-  type: process.env.TYPEORM_CONNECTION,
-  host: process.env.TYPEORM_HOST,
-  port: process.env.TYPEORM_PORT,
-  username: process.env.TYPEORM_USERNAME,
-  password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE
+    type: process.env.TYPEORM_CONNECTION,
+    host: process.env.TYPEORM_HOST,
+    port: process.env.TYPEORM_PORT,
+    username: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    database: process.env.TYPEORM_DATABASE,
 });
 
-mysqlDatabase.initialize()
-.then(() => {
-  console.log("Data Source has been inilialized!💡")
-})
-.catch((err) => {
-  console.error("Error during Data Source initialization", err)
-  mysqlDatabase.destroy()
-})
+mysqlDatabase
+    .initialize()
+    .then(() => {
+        console.log('Data Source has been inilialized!💡');
+    })
+    .catch((err) => {
+        console.error('Error during Data Source initialization', err);
+        mysqlDatabase.destroy();
+    });
 
 // Health Check
-app.get("/ping", (req, res) => {
-res.status(200).json({ "message" : "pongsssss"} );
+app.get('/ping', (req, res) => {
+    res.status(200).json({ message: 'pongsssss' });
 });
 
-
 // 유저 회원가입
-app.post("/email_signup", async (req, res) => {
-  const { name, email, profileImage, password } = req.body;
+app.post('/email_signup', async (req, res) => {
+    const { name, email, profileImage, password } = req.body;
 
-  await mysqlDatabase.query(
-    `INSERT INTO users(
+    await mysqlDatabase.query(
+        `INSERT INTO users(
       name,
       email,
       profile_image,
       password
     ) VALUES (?, ?, ?, ?);
     `,
-    [ name, email, profileImage, password ]
-  );
-  res.status(201).json({ message : "userCreated" })
-})
+        [name, email, profileImage, password]
+    );
+    res.status(201).json({ message: 'userCreated' });
+});
 
 // 게시물 등록하기
-app.post("/post_created", async (req, res) => {
-  const { title, content, postImage, userId } = req.body;
+app.post('/post_created', async (req, res) => {
+    const { title, content, postImage, userId } = req.body;
 
-  await mysqlDatabase.query(
-    `INSERT INTO posts(
+    await mysqlDatabase.query(
+        `INSERT INTO posts(
       title,
       content,
       post_image,
       user_id
     ) VALUES (?, ?, ?, ?);
     `,
-    [ title, content, postImage, userId]
-  );
-  res.status(201).json({ message: "postCreated" })
-})
+        [title, content, postImage, userId]
+    );
+    res.status(201).json({ message: 'postCreated' });
+});
 
 // 전체 게시글 조회하기
-app.get("/posts", async (req, res) => {
-
-  await mysqlDatabase.query(
-    `SELECT 
+app.get('/posts', async (req, res) => {
+    await mysqlDatabase.query(
+        `SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
       p.id AS postingId,
       p.post_image AS postingImageUrl,
       p.content AS postingContent
     FROM users u
-    INNER JOIN posts p ON u.id = p.user_id`
-    ,(err, rows) => {
-      res.status(200).json({ data : rows })
-    }
-  )
-})
+    INNER JOIN posts p ON u.id = p.user_id`,
+        (err, rows) => {
+            res.status(200).json({ data: rows });
+        }
+    );
+});
 
 // 유저의 게시물 조회하기
-app.get("/user_post/userId/:userId", async (req, res) => {
-  const { userId } = req.params;
+app.get('/user_post/userId/:userId', async (req, res) => {
+    const { userId } = req.params;
 
-  const [ userPostList ] = await mysqlDatabase.query(
-    `SELECT 
+    const [userPostList] = await mysqlDatabase.query(
+        `SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
       JSON_ARRAYAGG(
@@ -106,28 +105,28 @@ app.get("/user_post/userId/:userId", async (req, res) => {
     INNER JOIN posts p ON u.id = p.user_id
     WHERE u.id = ${userId}
     GROUP BY u.id;
-    `, 
-  );
-  res.status(200).json({ data : userPostList })
-})
+    `
+    );
+    res.status(200).json({ data: userPostList });
+});
 
 // 게시글 수정하기
-app.patch("/post_modify/postId/:postId", async (req, res) => {
-  const { title, content, postImage } = req.body;
-  const { postId } = req.params;
+app.patch('/post_modify/postId/:postId', async (req, res) => {
+    const { title, content, postImage } = req.body;
+    const { postId } = req.params;
 
-  await mysqlDatabase.query(
-    `UPDATE posts
+    await mysqlDatabase.query(
+        `UPDATE posts
       SET title = ?,
           content = ?,
           post_image = ?
       WHERE id = ${postId}
       `,
-      [ title, content, postImage]
-  )
+        [title, content, postImage]
+    );
 
-  const [ postModify ] = await mysqlDatabase.query(
-    `SELECT
+    const [postModify] = await mysqlDatabase.query(
+        `SELECT
       u.id AS user_id,
       u.name AS userName,
       p.id AS postingId,
@@ -136,47 +135,46 @@ app.patch("/post_modify/postId/:postId", async (req, res) => {
     FROM users u
     INNER JOIN posts p ON u.id = p.user_id
     WHERE p.id = ${postId}
-    `,
-  );
-  res.status(200).json({ data : postModify })
-})
+    `
+    );
+    res.status(200).json({ data: postModify });
+});
 
 // 게시글 삭제하기
-app.delete("/post_delete/postId/:postId", async (req, res) => {
-  const { postId } = req.params;
+app.delete('/post_delete/postId/:postId', async (req, res) => {
+    const { postId } = req.params;
 
-  await mysqlDatabase.query(
-    `DELETE FROM posts
+    await mysqlDatabase.query(
+        `DELETE FROM posts
     WHERE posts.id = ${postId}
-    `,
-  );
+    `
+    );
 
-  res.status(200).json({ message : "postingDeleted" })
-})
+    res.status(200).json({ message: 'postingDeleted' });
+});
 
 // 좋아요 누르기
-app.post("/likes", async (req, res) => {
-  const { userId, postId } = req.body;
+app.post('/likes', async (req, res) => {
+    const { userId, postId } = req.body;
 
-  await mysqlDatabase.query(
-    `INSERT INTO likes(
+    await mysqlDatabase.query(
+        `INSERT INTO likes(
       user_id,
       post_id
     ) VALUES (?, ?);
     `,
-    [ userId, postId ]
-  );
-  res.status(200).json({ message : "likeCreated"})
-})
-
+        [userId, postId]
+    );
+    res.status(200).json({ message: 'likeCreated' });
+});
 
 const PORT = process.env.PORT;
 const start = async () => {
-  try {
-    app.listen(PORT, () => console.log(`server is listening on ${PORT}🔥🔥🔥🔥🔥🔥🔥`))
-  } catch (err) {
-    console.error(err)
-  }
+    try {
+        app.listen(PORT, () => console.log(`server is listening on ${PORT}🔥🔥🔥🔥🔥🔥🔥`));
+    } catch (err) {
+        console.error(err);
+    }
 };
 
 start();
