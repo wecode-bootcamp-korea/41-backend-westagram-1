@@ -1,4 +1,3 @@
-create_posts_table
 -- migrate:up
 CREATE TABLE posts(
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
