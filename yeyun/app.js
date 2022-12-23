@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -14,6 +15,7 @@ const appDataSource = new DataSource({
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
 });
+
 appDataSource
   .initialize()
   .then(() => {
@@ -29,7 +31,6 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
-// health check
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
 });
