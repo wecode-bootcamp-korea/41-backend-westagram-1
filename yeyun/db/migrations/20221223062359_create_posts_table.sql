@@ -5,6 +5,7 @@ CREATE TABLE posts(
   content VARCHAR(3000) NULL,
   user_id INT NOT NULL,
   url VARCHAR(2000) NOT NULL,
+  CONSTRAINT posts_fk FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 -- migrate:down
