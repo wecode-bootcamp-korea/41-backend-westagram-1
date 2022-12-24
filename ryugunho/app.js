@@ -36,7 +36,7 @@ app.get("/ping", function(req, res) {
 // 유저 회원가입 엔드포인트
 
 app.post("/user", async function(req, res) {
-    const user = req.body;
+    const { user } = req.body;
 
     const userData = await appDataSource.query(
         `
