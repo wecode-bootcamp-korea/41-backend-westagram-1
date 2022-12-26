@@ -37,6 +37,27 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
+///////////
+//Sign up//
+///////////
+app.post('/signup', async (req, res, next) => {
+  const { id, name, email, password } = req.body
+
+  await appDataSource.query(
+    `INSERT INTO users(
+      id,
+      name,
+      email,
+      password
+      ) VALUES (?, ?, ?, ?);
+    `,
+    [id, name, email, password]
+  );
+
+  res.status(201).json({ message: "successfully signed up" });
+});
+///// Sign up -END- /////
+
 
 const PORT = process.env.PORT;
 
