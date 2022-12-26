@@ -62,14 +62,14 @@ app.post("/user", async function(req, res) {
 app.post("/login", async function(req, res) {
     const userData = req.body;
 
-    const existingUser = await appDataSource.query(`
+    const [ existingUser ] = await appDataSource.query(`
         SELECT * 
         FROM users
         WHERE email = ?
     
     `, [ userData.email ]);
 
-    if (!existingUser[0]) {
+    if (!existingUser) {
         return res.status(401).json({ message: "Invalid user!!! Maybe create one?"});
     }
 
@@ -79,7 +79,7 @@ app.post("/login", async function(req, res) {
         return res.status(401).json({ message: "Invalid password!!!"});
     }
 
-    const jwtToken = jwt.sign({ userId: existingUser[0].id }, process.env.secretKey);
+    const jwtToken = jwt.sign({ userId: existingUser.id }, process.env.secretKey);
 
     return res.status(200).json({ accessToken: jwtToken });
 })
