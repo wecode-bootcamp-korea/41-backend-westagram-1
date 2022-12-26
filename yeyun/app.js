@@ -35,6 +35,23 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
 });
 
+app.get("/posts", async (req, res) => {
+  console.log("HI");
+  const postData = await appDataSource.query(
+    `SELECT
+              users.id as userId,
+              users.profile_iamge as userProfileImage,
+              posts.id as postingId,
+              posts.content as postingContent
+          FROM posts
+      INNER JOIN users ON users.id = posts.user_id;
+      `,
+    (err, rows) => {
+      return res.status(200).json({ data: rows });
+    }
+  );
+});
+
 app.post("/users", async (req, res, next) => {
   const { name, email, password } = req.body;
 
