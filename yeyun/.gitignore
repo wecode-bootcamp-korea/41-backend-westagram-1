@@ -244,6 +244,7 @@ $RECYCLE.BIN/
 .history
 .ionide
 
+<<<<<<< HEAD
 *~
 
 # temporary files which can be created if a process still has a handle open of a deleted file
@@ -258,6 +259,8 @@ $RECYCLE.BIN/
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+=======
+>>>>>>> f7fd595811a2edb4a0845c88fa1d4934cdfc2ce0
 ### WebStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
