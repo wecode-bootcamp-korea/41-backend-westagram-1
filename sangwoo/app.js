@@ -34,15 +34,14 @@ app.get("/ping", cors(), function (req, res, next) {
 
 // CURS - C
 app.post("/users", async (req, res, next) => {
-    const { first_name, last_name, age} = req.body
+    const { userId, userProfileImage } = req.body
      
     await mysqlDataSource.query(
         `INSERT INTO users(
-                 first_name,
-                 last_name,
-                 age
-                 ) VALUES (?, ?, ?);
-                 `, [ first_name, last_name, age]
+                 userId,
+                 userProfileImage
+                 ) VALUES (?, ?);
+                 `, [ userId, userProfileImage ]
         );
          res.status(201).json({ message : "userCreated" });
     });
