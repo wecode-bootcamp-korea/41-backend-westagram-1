@@ -34,65 +34,47 @@ app.get("/ping", cors(), function (req, res, next) {
 
 // CURS - C
 app.post("/users", async (req, res, next) => {
-    const { first_name, last_name, age} = req.body
+    const { userId, userProfileImage } = req.body
      
     await mysqlDataSource.query(
         `INSERT INTO users(
-                 first_name,
-                 last_name,
-                 age
-                 ) VALUES (?, ?, ?);
-                 `, [ first_name, last_name, age]
+                 userId,
+                 userProfileImage
+                 ) VALUES (?, ?);
+                 `, [ userId, userProfileImage ]
         );
          res.status(201).json({ message : "userCreated" });
     });
 
 app.post("/posts", async (req, res, next) => {
-    const { title, content, user_id } = req.body
+    const { postingId, postingImageUrl, postingContent } = req.body
 
     await mysqlDataSource.query(
         `INSERT INTO posts(
-                title,
-                content,
-                user_id
+                postingId,
+                postingImageUrl,
+                postingContent
             )  VALUES (?, ?, ?);
-            `, [ title, content, user_id ]
+            `, [ postingId, postingImageUrl, postingContent ]
     );
     res.status(201).json({ message : "postCreated" })
 });
 
-app.post("/alldata", async (req, res, next) => {
-    const { userId, userProfileImage, postingId, 
-            postingImageUrl, postingContent } = req.body
-
-    await mysqlDataSource.query(
-        `INSERT INTO alldata(
-                userId,
-                userProfileImage,
-                postingId,
-                postingImageUrl,
-                postingContent
-        )   VALUES (?, ?, ?, ?, ?);
-        `, [ userId, userProfileImage, postingId,
-             postingImageUrl, postingContent ]
-    );
-    res.status(201).json({ message : "alldataCreated" })
-});
-
 // CURD-U
-app.get('/alldata', async (req, res) => {
+app.get('/allDB', async (req, res) => {
     await mysqlDataSource.query(
         `SELECT
-               alldata.userId,
-               alldata.userProfileImage,
-               alldata.postingId,
-               alldata.postingImageUrl,
-               alldata.postingContent
-            FROM alldata alldata`
-        ,(err, rows) => {
-                res.status(200).json(rows);
+               users.userId,
+               users.userProfileImage,
+               posts.postingId,
+               posts.postingImageUrl,
+               posts.postingContent
+            FROM users, posts
+            `, (err, rows) => { res.status(200).json(rows);
         })
 });
+
+
 
 
 const PORT = process.env.PORT;
