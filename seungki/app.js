@@ -3,10 +3,13 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const { DataSource } = require('typeorm');
 
 const app = express();
+
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
@@ -17,7 +20,7 @@ const mysqlDatabase = new DataSource({
   port: process.env.TYPEORM_PORT,
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE
+  database: process.env.TYPEORM_DATABASE,
 });
 
 mysqlDatabase
@@ -35,9 +38,14 @@ app.get('/ping', (req, res) => {
   res.status(200).json({ message: 'pongsssss' });
 });
 
-// 유저 회원가입
+// 유저 회원가입 & Bcrypt를 이용하여 비밀번호 암호화하기
 app.post('/email_signup', async (req, res) => {
   const { name, email, profileImage, password } = req.body;
+
+  const saltRounds = 12;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+  // const checkHash = await bcrypt.compare(password, hashedPassword);
 
   await mysqlDatabase.query(
     `INSERT INTO users(
@@ -47,7 +55,7 @@ app.post('/email_signup', async (req, res) => {
         password
     ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, profileImage, password]
+    [name, email, profileImage, hashedPassword]
   );
   res.status(201).json({ message: 'userCreated' });
 });
@@ -155,7 +163,7 @@ app.delete('/post_delete/postId/:postId', async (req, res) => {
   res.status(200).json({ message: 'postingDeleted' });
 });
 
-// 좋아 요 누르기
+// 좋아요 누르기
 app.post('/likes', async (req, res) => {
   const { userId, postId } = req.body;
 
