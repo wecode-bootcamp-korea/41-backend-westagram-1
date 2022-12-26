@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { validateToken } = require('./auth');
 
 const { DataSource } = require('typeorm');
 
@@ -45,8 +46,6 @@ app.post('/email_signup', async (req, res) => {
   const saltRounds = 12;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  // const checkHash = await bcrypt.compare(password, hashedPassword);
-
   await mysqlDatabase.query(
     `INSERT INTO users(
         name,
@@ -60,9 +59,36 @@ app.post('/email_signup', async (req, res) => {
   res.status(201).json({ message: 'userCreated' });
 });
 
+// 유저 로그인 & Bcrypt Verification 및 JWT 발급하기
+app.post('/signin', async (req, res) => {
+  const { email, password } = req.body;
+
+  const [users] = await mysqlDatabase.query(
+    `SELECT
+      *
+    FROM users
+    WHERE email = ?
+    `,
+    [email]
+  );
+
+  const jwtToken = jwt.sign(users.id, process.env.SECRETKEY);
+  const checkHash = await bcrypt.compare(password, users.password);
+
+  if (checkHash) {
+    res.status(200).json({ accessToken: jwtToken });
+  }
+  if (!checkHash) {
+    res.status(401).json({ message: 'Invalid User' });
+  }
+});
+
 // 게시물 등록하기
 app.post('/post_created', async (req, res) => {
-  const { title, content, postImage, userId } = req.body;
+  const { title, content, postImage } = req.body;
+  const jwtToken = req.headers.authorization;
+  const tokenData = await jwt.verify(jwtToken, process.env.SECRETKEY);
+  console.log(tokenData);
 
   await mysqlDatabase.query(
     `INSERT INTO posts(
@@ -72,7 +98,7 @@ app.post('/post_created', async (req, res) => {
         user_id
     ) VALUES (?, ?, ?, ?);
     `,
-    [title, content, postImage, userId]
+    [title, content, postImage, tokenData]
   );
   res.status(201).json({ message: 'postCreated' });
 });
