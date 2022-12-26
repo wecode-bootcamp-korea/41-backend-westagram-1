@@ -6,8 +6,6 @@ const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const secretKey = "thisIsSuperSecret";
-
 const { DataSource } = require("typeorm");
 
 const app = express();
@@ -60,6 +58,7 @@ app.post("/user", async function(req, res) {
 
 
 // 로그인 엔트포인트
+
 app.post("/login", async function(req, res) {
     const userData = req.body;
 
@@ -77,12 +76,12 @@ app.post("/login", async function(req, res) {
     const passwordsAreEqual = await bcrypt.compare(userData.password, existingUser[0].password);
 
     if (!passwordsAreEqual) {
-        return res.status(401).json({ message: "Invalid user!!! Maybe create one?"});
+        return res.status(401).json({ message: "Invalid password!!!"});
     }
 
-    const jwtToken = jwt.sign({ userId: existingUser.id }, secretKey);
+    const jwtToken = jwt.sign({ userId: existingUser[0].id }, process.env.secretKey);
 
-    res.status(200).json({ accessToken: jwtToken });
+    return res.status(200).json({ accessToken: jwtToken });
 })
 
 app.get("/user/post/:id", async function(req, res) {
