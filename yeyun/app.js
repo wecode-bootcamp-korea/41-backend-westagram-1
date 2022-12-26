@@ -52,17 +52,16 @@ app.post("/users", async (req, res, next) => {
 });
 
 app.post("/posts", async (req, res, next) => {
-  const { title, content, user_id, url } = req.body;
+  const { title, content, user_id } = req.body;
 
   await appDataSource.query(
     `INSERT INTO posts (
       title,
       content,
-      user_id,
-      url
-    ) VALUES (?, ?, ?, ?);
+      user_id
+    ) VALUES (?, ?, ?);
     `,
-    [title, content, user_id, url]
+    [title, content, user_id]
   );
 
   res.status(201).json({ message: "postCreated" });
