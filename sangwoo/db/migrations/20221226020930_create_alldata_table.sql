@@ -1,0 +1,15 @@
+-- migrate:up
+CREATE TABLE alldata (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId VARCHAR(100) NOT NULL,
+    userProfileImage VARCHAR(1000) NULL,
+    postingId VARCHAR(100) NOT NULL,
+    postingImageUrl  VARCHAR(500) NULL,
+    postingContent VARCHAR(1000) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP
+)
+
+-- migrate:down
+DROP TABLE alldata;

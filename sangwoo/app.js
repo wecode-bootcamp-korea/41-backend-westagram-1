@@ -61,6 +61,39 @@ app.post("/posts", async (req, res, next) => {
     res.status(201).json({ message : "postCreated" })
 });
 
+app.post("/alldata", async (req, res, next) => {
+    const { userId, userProfileImage, postingId, 
+            postingImageUrl, postingContent } = req.body
+
+    await mysqlDataSource.query(
+        `INSERT INTO alldata(
+                userId,
+                userProfileImage,
+                postingId,
+                postingImageUrl,
+                postingContent
+        )   VALUES (?, ?, ?, ?, ?);
+        `, [ userId, userProfileImage, postingId,
+             postingImageUrl, postingContent ]
+    );
+    res.status(201).json({ message : "alldataCreated" })
+});
+
+// CURD-U
+app.get('/alldata', async (req, res) => {
+    await mysqlDataSource.query(
+        `SELECT
+               alldata.userId,
+               alldata.userProfileImage,
+               alldata.postingId,
+               alldata.postingImageUrl,
+               alldata.postingContent
+            FROM alldata alldata`
+        ,(err, rows) => {
+                res.status(200).json(rows);
+        })
+});
+
 
 const PORT = process.env.PORT;
      
