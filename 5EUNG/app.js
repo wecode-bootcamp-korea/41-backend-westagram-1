@@ -37,40 +37,42 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
-///////////
-//Sign up//
-///////////
+//////////
+//회원가입//
+//////////
 app.post('/signup', async (req, res, next) => {
-  const { id, name, email, password } = req.body
+  const { name, email, profileImage, password } = req.body
 
   await appDataSource.query(
     `INSERT INTO users(
-      id,
       name,
       email,
+      profile_image,
       password
       ) VALUES (?, ?, ?, ?);
     `,
-    [id, name, email, password]
+    [name, email, profileImage, password]
   );
 
   res.status(201).json({ message: "successfully signed up" });
 });
 ///// Sign up -END- /////
 
-/////////
-//Posts//
-/////////
+////////////
+//게시물 게시//
+////////////
 app.post('/posts', async (req, res) => {
-  const { title, contents } = req.body
+  const { title, content, postImage, userId } = req.body
 
   await appDataSource.query(
     `INSERT INTO posts(
       title,
-      contents
-      ) VALUES (?,?);
+      content,
+      post_image,
+      user_id
+      ) VALUES (?, ?, ?, ?);
     `,
-    [title, contents]
+    [title, content, postImage, userId]
   )
 
   res.status(201).json({ message: "postCreated" });
