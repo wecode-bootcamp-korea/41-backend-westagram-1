@@ -5,7 +5,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { validateToken } = require('./auth');
 
 const { DataSource } = require('typeorm');
 
@@ -85,10 +84,7 @@ app.post('/signin', async (req, res) => {
 
 // 게시물 등록하기
 app.post('/post_created', async (req, res) => {
-  const { title, content, postImage } = req.body;
-  const jwtToken = req.headers.authorization;
-  const tokenData = await jwt.verify(jwtToken, process.env.SECRETKEY);
-  console.log(tokenData);
+  const { title, content, postImage, userId } = req.body;
 
   await mysqlDatabase.query(
     `INSERT INTO posts(
@@ -98,7 +94,7 @@ app.post('/post_created', async (req, res) => {
         user_id
     ) VALUES (?, ?, ?, ?);
     `,
-    [title, content, postImage, tokenData]
+    [title, content, postImage, userId]
   );
   res.status(201).json({ message: 'postCreated' });
 });
