@@ -58,6 +58,25 @@ app.post('/signup', async (req, res, next) => {
 });
 ///// Sign up -END- /////
 
+/////////
+//Posts//
+/////////
+app.post('/posts', async (req, res) => {
+  const { title, contents } = req.body
+
+  await appDataSource.query(
+    `INSERT INTO posts(
+      title,
+      contents
+      ) VALUES (?,?);
+    `,
+    [title, contents]
+  )
+
+  res.status(201).json({ message: "postCreated" });
+})
+///// Posts -END- /////
+
 
 const PORT = process.env.PORT;
 
