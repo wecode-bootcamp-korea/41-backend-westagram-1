@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const { DataSource } = require("typeorm");
 
@@ -36,11 +38,13 @@ app.get("/ping", function(req, res) {
 // 유저 회원가입 엔드포인트
 
 app.post("/user", async function(req, res) {
-    const user = req.body;
+    const { user } = req.body;
     const saltRound = 12;
     const hashedPassword = await bcrypt.hash(user.password, saltRound);
 
+
     await appDataSource.query(
+
         `
         INSERT INTO users (
             name,
@@ -49,13 +53,14 @@ app.post("/user", async function(req, res) {
             password
         ) VALUES (?, ?, ?, ?)
         `, [ user.name, user.email, user.profile_image, hashedPassword ]);
-    
+
     res.status(200).json({ messsage: "userCreated!" });
-});
+
 
 port = process.env.PORT;
 
 app.listen(port);
+
 
 
 
