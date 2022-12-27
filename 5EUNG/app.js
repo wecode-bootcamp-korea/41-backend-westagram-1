@@ -67,7 +67,6 @@ const saltRounds = 12; // (3) Cost Factor
 const makeHash = async (password, saltRounds) => {
   return await bcrypt.hash(password, saltRounds); // (4) hash() method로 암호화, 첫번째 인자로 암호화 하고 싶은 평문이 두번째 인자로 Cost Factor가 들어간다.
 }
-
 ///// Bcrypt 실습 -END- /////
 
 //////////////
@@ -85,7 +84,6 @@ const main = async () => {
 };
 
 main();
-
 // Bcrypt 검증 -END- /////
 
 const PORT = process.env.PORT;
