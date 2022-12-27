@@ -74,8 +74,26 @@ app.get('/allDB', async (req, res) => {
         })
 });
 
+app.get('/userDB/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log(req.params)
 
-
+    await mysqlDataSource.query(
+        `SELECT
+        {
+            'data' : {
+                users.userId,
+                users.userProfileImag
+            } 'posts' : [
+                posts.postingId,
+                posts.postingImageUrl,
+                posts.postingContent
+            ]
+        }
+            FROM users, posts
+        `, (err, rows) => { res.status(200).json(rows);
+        })
+});
 
 const PORT = process.env.PORT;
      
