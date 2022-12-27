@@ -38,8 +38,8 @@ app.post("/users", async (req, res, next) => {
      
     await mysqlDataSource.query(
         `INSERT INTO users(
-                 userId,
-                 userProfileImage
+                 user_id,
+                 user_profile
                  ) VALUES (?, ?);
                  `, [ userId, userProfileImage ]
         );
@@ -51,9 +51,9 @@ app.post("/posts", async (req, res, next) => {
 
     await mysqlDataSource.query(
         `INSERT INTO posts(
-                postingId,
-                postingImageUrl,
-                postingContent
+                posting_id,
+                posting_image,
+                posting_content
             )  VALUES (?, ?, ?);
             `, [ postingId, postingImageUrl, postingContent ]
     );
@@ -64,11 +64,11 @@ app.post("/posts", async (req, res, next) => {
 app.get('/allDB', async (req, res) => {
     await mysqlDataSource.query(
         `SELECT
-               users.userId,
-               users.userProfileImage,
-               posts.postingId,
-               posts.postingImageUrl,
-               posts.postingContent
+               users.user_id,
+               users.user_profile,
+               posts.posting_id,
+               posts.posting_image,
+               posts.posting_content
             FROM users, posts
             `, (err, rows) => { res.status(200).json(rows);
         })
@@ -82,12 +82,12 @@ app.get('/userDB/:id', async (req, res) => {
         `SELECT
         {
             'data' : {
-                users.userId,
-                users.userProfileImag
+                users.user_id,
+                users.user_profile
             } 'posts' : [
-                posts.postingId,
-                posts.postingImageUrl,
-                posts.postingContent
+                posts.posting_id,
+                posts.posting_image,
+                posts.posting_content
             ]
         }
             FROM users, posts
