@@ -39,7 +39,7 @@ app.get('/ping', (req, res) => {
 });
 
 // 유저 회원가입 & Bcrypt를 이용하여 비밀번호 암호화하기
-app.post('/email_signup', async (req, res) => {
+app.post('/signup', async (req, res) => {
   const { name, email, profileImage, password } = req.body;
 
   const saltRounds = 12;
@@ -71,10 +71,10 @@ app.post('/signin', async (req, res) => {
     [email]
   );
 
-  const jwtToken = jwt.sign(users.id, process.env.SECRETKEY);
   const checkHash = await bcrypt.compare(password, users.password);
 
   if (checkHash) {
+    const jwtToken = jwt.sign(users.id, process.env.SECRETKEY);
     res.status(200).json({ accessToken: jwtToken });
   }
   if (!checkHash) {
