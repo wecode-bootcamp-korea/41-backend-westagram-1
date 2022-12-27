@@ -37,7 +37,6 @@ app.get("/ping", function(req, res) {
 
 app.post("/user", async function(req, res) {
     const user = req.body;
-
     const saltRound = 12;
     const hashedPassword = await bcrypt.hash(user.password, saltRound);
 
