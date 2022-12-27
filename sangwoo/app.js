@@ -26,7 +26,6 @@ mysqlDataSource.initialize()
  app.use(morgan('dev'));
  app.use(express.json());
 
-
 app.get("/ping", cors(), function (req, res, next) {
     res.json({ message: "pong"});
 });

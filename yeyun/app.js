@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-require("dotenv").config();
-
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -35,23 +33,6 @@ app.use(express.json());
 
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });
-});
-
-app.post("/users", async (req, res, next) => {
-  const { name, email, profile_iamge, password } = req.body;
-
-  await appDataSource.query(
-    `INSERT INTO users (
-      name,
-      email,
-      profile_iamge,
-      password
-    ) VALUES (?, ?, ?, ?);
-    `,
-    [name, email, profile_iamge, password]
-  );
-
-  res.status(201).json({ message: "userCreated" });
 });
 
 const start = async () => {
