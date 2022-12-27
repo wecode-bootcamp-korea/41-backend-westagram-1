@@ -104,8 +104,6 @@ app.post("/posts", async (req, res, next) => {
   res.status(201).json({ message: "postCreated" });
 });
 
-app.patch("/posts", async (req, res) => {});
-
 const start = async () => {
   try {
     app.listen(PORT, () => console.log(`Server is listening on ${PORT}`));
