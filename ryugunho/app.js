@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const { DataSource } = require("typeorm");
 
@@ -36,7 +38,10 @@ app.get("/ping", function(req, res) {
 // 유저 회원가입 엔드포인트
 
 app.post("/user", async function(req, res) {
-    const { user } = req.body;
+    const user = req.body;
+
+    const saltRound = 12;
+    const hashedPassword = await bcrypt.hash(user.password, saltRound);
 
     const userData = await appDataSource.query(
         `
@@ -45,10 +50,38 @@ app.post("/user", async function(req, res) {
             email,
             profile_image,
             password
-        ) VALUES (?, ?, ?)
-        `, [ user.name, user.email, user.profile_image, user.password ]);
+        ) VALUES (?, ?, ?, ?)
+        `, [ user.name, user.email, user.profile_image, hashedPassword ]);
     
-    res.status(200).json({ data: userData });
+    res.status(200).json({ messsage: "userCreated!" });
+});
+
+
+// 로그인 엔트포인트
+
+app.post("/login", async function(req, res) {
+    const userData = req.body;
+
+    const [ existingUser ] = await appDataSource.query(`
+        SELECT * 
+        FROM users
+        WHERE email = ?
+    
+    `, [ userData.email ]);
+
+    if (!existingUser) {
+        return res.status(401).json({ message: "Invalid user!!! Maybe create one?"});
+    }
+
+    const passwordsAreEqual = await bcrypt.compare(userData.password, existingUser[0].password);
+
+    if (!passwordsAreEqual) {
+        return res.status(401).json({ message: "Invalid password!!!"});
+    }
+
+    const jwtToken = jwt.sign({ userId: existingUser.id }, process.env.secretKey);
+
+    return res.status(200).json({ accessToken: jwtToken });
 })
 
 app.get("/user/post/:id", async function(req, res) {
@@ -146,6 +179,7 @@ app.post("/likes/:id", async function (req, res) {
 port = process.env.PORT;
 
 app.listen(port);
+
 
 
 
