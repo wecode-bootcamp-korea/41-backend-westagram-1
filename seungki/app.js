@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
+
 const { DataSource } = require('typeorm');
 
 const app = express();
@@ -45,10 +46,10 @@ app.post('/email_signup', async (req, res) => {
 
   await mysqlDatabase.query(
     `INSERT INTO users(
-      name,
-      email,
-      profile_image,
-      password
+        name,
+        email,
+        profile_image,
+        password
     ) VALUES (?, ?, ?, ?);
     `,
     [name, email, profileImage, hashedPassword]
@@ -57,7 +58,6 @@ app.post('/email_signup', async (req, res) => {
 });
 
 const PORT = process.env.PORT;
-
 const start = async () => {
   try {
     app.listen(PORT, () => console.log(`server is listening on ${PORT}🔥🔥🔥🔥🔥🔥🔥`));
