@@ -31,15 +31,10 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'))
 
-
-// health check 
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
-//////////
-//회원가입//
-//////////
 app.post('/signup', async (req, res, next) => {
   const { name, email, profileImage, password } = req.body
 
@@ -56,11 +51,7 @@ app.post('/signup', async (req, res, next) => {
 
   res.status(201).json({ message: "successfully signed up" });
 });
-///// 회원가입 -END- /////
 
-////////////
-//게시물 게시//
-////////////
 app.post('/posts', async (req, res) => {
   const { title, content, postImage, userId } = req.body
 
@@ -77,9 +68,6 @@ app.post('/posts', async (req, res) => {
 
   res.status(201).json({ message: "postCreated" });
 })
-///// 게시물 게시 -END- /////
-
-
 
 const PORT = process.env.PORT;
 
