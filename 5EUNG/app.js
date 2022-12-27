@@ -56,7 +56,7 @@ app.post('/signup', async (req, res, next) => {
 
   res.status(201).json({ message: "successfully signed up" });
 });
-///// Sign up -END- /////
+///// 회원가입 -END- /////
 
 ////////////
 //게시물 게시//
@@ -77,7 +77,8 @@ app.post('/posts', async (req, res) => {
 
   res.status(201).json({ message: "postCreated" });
 })
-///// Posts -END- /////
+///// 게시물 게시 -END- /////
+
 
 
 const PORT = process.env.PORT;
