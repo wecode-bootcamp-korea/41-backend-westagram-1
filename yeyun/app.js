@@ -36,7 +36,6 @@ app.get("/ping", (req, res) => {
 });
 
 app.get("/posts", async (req, res) => {
-  console.log("HI");
   const postData = await appDataSource.query(
     `SELECT
               users.id as userId,
@@ -50,6 +49,25 @@ app.get("/posts", async (req, res) => {
       return res.status(200).json({ data: rows });
     }
   );
+});
+
+app.get("/pcheck/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const pcheck = await appDataSource.query(
+    `SELECT
+        users.id as userId,
+        users.profile_iamge as userProfileImage,
+        JSON_ARRAYAGG(JSON_OBJECT(
+          "postingId" , posts.id,
+          "postingImage", posts.imageurl,
+          "postContent", posts.content)) as postings
+        FROM posts
+      INNER JOIN users ON users.id = posts.user_id
+      WHERE posts.user_id = ?;
+    `,
+    [userId]
+  );
+  return res.status(200).json({ data: pcheck });
 });
 
 app.post("/users", async (req, res, next) => {
@@ -69,16 +87,17 @@ app.post("/users", async (req, res, next) => {
 });
 
 app.post("/posts", async (req, res, next) => {
-  const { title, content, user_id } = req.body;
+  const { title, content, user_id, imageurl } = req.body;
 
   await appDataSource.query(
     `INSERT INTO posts (
       title,
       content,
-      user_id
-    ) VALUES (?, ?, ?);
+      user_id,
+      imageurl
+    ) VALUES (?, ?, ?, ?);
     `,
-    [title, content, user_id]
+    [title, content, user_id, imageurl]
   );
 
   res.status(201).json({ message: "postCreated" });

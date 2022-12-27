@@ -5,6 +5,7 @@ CREATE TABLE posts(
   content VARCHAR(3000) NULL,
   user_id INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  imageurl VARCHAR(2000) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
