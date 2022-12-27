@@ -38,13 +38,13 @@ app.post("/users", async (req, res, next) => {
      
     await mysqlDataSource.query(
         `INSERT INTO users(
-                 userId,
-                 userProfileImage
-                 ) VALUES (?, ?);
-                 `, [ userId, userProfileImage ]
+            user_id,
+            user_profile
+        ) VALUES (?, ?);
+        `, [ userId, userProfileImage ]
         );
-         res.status(201).json({ message : "userCreated" });
-    });
+    res.status(201).json({ message : "userCreated" });
+});
     
 const PORT = process.env.PORT;
      
