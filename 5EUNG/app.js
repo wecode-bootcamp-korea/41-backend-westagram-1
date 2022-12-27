@@ -85,6 +85,30 @@ app.get('/posts/all', async (req, res) => {
   );
 });
 
+app.get('/user_post/userId/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  const [userPostList] = await appDataSource.query(
+    `SELECT
+        u.id AS userId,
+        u.profile_image AS userProfileImage,
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            "postingId", p.id,
+            "postingImageUrl", p.post_image,
+            "postingContent", p.content
+          )
+        ) AS postings
+    FROM users u
+    INNER JOIN posts p ON u.id = p.user_id
+    WHERE u.id = ?
+    GROUP BY u.id;
+    `,
+    [userId]
+  );
+  res.status(200).json({ data: userPostList });
+});
+
 const PORT = process.env.PORT;
 
 const start = async () => {
