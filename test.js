@@ -4,9 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
-const { validateToken } = require("./token");
 const { DataSource } = require("typeorm");
 
 const app = express();
@@ -44,7 +42,7 @@ app.post("/user", async function(req, res) {
     const saltRound = 12;
     const hashedPassword = await bcrypt.hash(user.password, saltRound);
 
-    await appDataSource.query(
+    const userData = await appDataSource.query(
         `
         INSERT INTO users (
             name,
@@ -55,34 +53,19 @@ app.post("/user", async function(req, res) {
         `, [ user.name, user.email, user.profile_image, hashedPassword ]);
     
     res.status(200).json({ messsage: "userCreated!" });
-});
-
-
-// 로그인 엔트포인트
+})
 
 app.post("/login", async function(req, res) {
     const userData = req.body;
-
-    const [ existingUser ] = await appDataSource.query(`
+    console.log(userData)
+    const existingUser = await appDataSource.query(`
         SELECT * 
         FROM users
         WHERE email = ?
     
-    `, [ userData.email ]);
-
-    if (!existingUser) {
-        return res.status(401).json({ message: "Invalid user!!! Maybe create one?"});
-    }
-
-    const passwordsAreEqual = await bcrypt.compare(userData.password, existingUser.password);
-
-    if (!passwordsAreEqual) {
-        return res.status(401).json({ message: "Invalid password!!!"});
-    }
-
-    const jwtToken = jwt.sign({ userId: existingUser.id }, process.env.secretKey);
-
-    return res.status(200).json({ accessToken: jwtToken });
+    `, [ user.email ]);
+    console.log(existingUser);
+    res.status(200).json({ message: "dddd" });
 })
 
 app.get("/user/post/:id", async function(req, res) {
@@ -101,8 +84,7 @@ app.get("/user/post/:id", async function(req, res) {
         WHERE u.id = ?
         GROUP BY u.id
         `
-        , [ userId ]
-    )
+        , [ userId ]);
 
     res.status(200).json({ data: userPostingData });
 })
@@ -113,7 +95,7 @@ app.patch("/user/post/:id", async function(req, res) {
     const { postId } = req.params; 
     const { title, content, imageUrl }= req.body;
 
-    await appDataSource.query(`
+    const up = await appDataSource.query(`
         UPDATE posts
             SET
                 title = ?,
@@ -140,30 +122,7 @@ app.patch("/user/post/:id", async function(req, res) {
     res.status(200).json({ data: updatedPost });
 });
 
-// 게시물 작성 엔드포인트 구현
-
-app.post("/post", validateToken, async function(req, res) {
-    const { title, content, imageUrl } = req.body;
-
-    const userId = req.userId;
-
-    await appDataSource.query(`
-        INSERT INTO posts
-        (
-            title,
-            content,
-            user_id,
-            imageUrl
-        )
-        VALUES (?, ?, ?, ?)
-    `, [title, content, userId, imageUrl ] 
-    );
-
-    return res.status(201).json({ message: "postCreated!" });
-})
-
 // 게시물 삭제 엔드포인트 구현
-
 app.delete("/post/:id", async function(req, res) {
     const { postId } = req.params;
 
@@ -171,8 +130,7 @@ app.delete("/post/:id", async function(req, res) {
         DELETE FROM likes
         WHERE post_id = ?
     `
-    , [ postId ]
-    )
+    , [ postId ]);
 
     await appDataSource.query(`
         DELETE FROM posts
@@ -200,16 +158,9 @@ app.post("/likes/:id", async function (req, res) {
     res.status(201).json({ message: "likeCreated" });
 })
 
-// Error handling middleware
-
-app.use(function(a, req, res, next) {
-    res.status(404).json({ message: a.message });
-})
-
 port = process.env.PORT;
 
 app.listen(port);
-
 
 
 
