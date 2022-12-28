@@ -20,11 +20,11 @@ mysqlDataSource.initialize()
     console.log("Data Source has been initialized!")
  })
 
- const app = express();
+const app = express();
  
- app.use(cors());
- app.use(morgan('dev'));
- app.use(express.json());
+app.use(cors());
+app.use(morgan('dev'));
+app.use(express.json());
 
 app.get("/ping", cors(), function (req, res, next) {
     res.json({ message: "pong"});

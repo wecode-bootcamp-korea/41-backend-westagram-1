@@ -35,22 +35,20 @@ app.get("/ping", function(req, res) {
     res.status(200).json({ message: "pong" });
 })
 
-// 유저 회원가입 엔드포인트
-
 app.post("/user", async function(req, res) {
     const { user } = req.body;
     const saltRound = 12;
     const hashedPassword = await bcrypt.hash(user.password, saltRound);
 
     await appDataSource.query(
-        `
-        INSERT INTO users (
-            name,
-            email,
-            profile_image,
-            password
-        ) VALUES (?, ?, ?, ?)
-        `, [ user.name, user.email, user.profile_image, hashedPassword ]);
+    `
+    INSERT INTO users (
+        name,
+        email,
+        profile_image,
+        password
+    ) VALUES (?, ?, ?, ?)
+    `, [ user.name, user.email, user.profile_image, hashedPassword ]);
 
     res.status(200).json({ messsage: "userCreated!" });
 
