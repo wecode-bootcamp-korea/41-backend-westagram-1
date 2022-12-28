@@ -42,9 +42,7 @@ app.post("/user", async function(req, res) {
     const saltRound = 12;
     const hashedPassword = await bcrypt.hash(user.password, saltRound);
 
-
     await appDataSource.query(
-
         `
         INSERT INTO users (
             name,
@@ -56,12 +54,11 @@ app.post("/user", async function(req, res) {
 
     res.status(200).json({ messsage: "userCreated!" });
 
+});
 
 port = process.env.PORT;
 
 app.listen(port);
-
-
 
 
 
