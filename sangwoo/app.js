@@ -96,22 +96,36 @@ app.get('/posts/users/:id', async (req, res) => {
     });
 
 
-app.put('/modifyUser', async (req, res) => {
-    const { userId, userName, postingId, postingTitle, postingContent } = req.body
+app.patch('/modifypost/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const { postingTitle, postingContent } = req.body;
 
     await mysqlDataSource.query(
-        ` UPDATE users
-            SET
-                user_id = ?,
-                user_name = ?,
-                posting_id = ?,
-                posting_title = ?,
-                posting_content = ?
-                WHERE id = ?
-        `, [ userId, userName, postingId, postingTitle, postingContent]
-    );
-    res.status(201).json({ message :" successfully updated" })
-})
+        `
+        UPDATE posts
+           SET
+              posting_title = ?,
+              posting_content = ?
+              WHERE id = ?
+        `, [ postingTitle, postingContent, id ]);
+
+        const updatedPost = await mysqlDataSource.query(
+                ` 
+                SELECT
+                    u.user_id AS userId,
+                    u.user_name AS userName,
+                    p.posting_id AS postingId,
+                    p.posting_title AS postingTitle,
+                    p.posting_content AS postingContent
+                    FROM users u
+                    INNER JOIN posts p
+                    ON u.id = p.user_id = 1
+                    WHERE u.id = ?
+                `, [ id ]
+        );
+        res.status(200).json({ data : updatedPost })
+});
 
     
 const PORT = process.env.PORT;
