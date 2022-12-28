@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { validateToken } = require('./middleware/auth');
 
 const { DataSource } = require('typeorm');
 
@@ -82,9 +83,9 @@ app.post('/signin', async (req, res) => {
   }
 });
 
-// 게시물 등록하기
-app.post('/post_created', async (req, res) => {
-  const { title, content, postImage, userId } = req.body;
+// 게시물 등록하기 & 로그인 한 사용자만 게시글 등록하기
+app.post('/created', validateToken, async (req, res) => {
+  const { title, content, postImage } = req.body;
 
   await mysqlDatabase.query(
     `INSERT INTO posts(
@@ -94,7 +95,7 @@ app.post('/post_created', async (req, res) => {
         user_id
     ) VALUES (?, ?, ?, ?);
     `,
-    [title, content, postImage, userId]
+    [title, content, postImage, req.userId]
   );
   res.status(201).json({ message: 'postCreated' });
 });
