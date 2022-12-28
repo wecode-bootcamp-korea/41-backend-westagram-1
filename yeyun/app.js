@@ -57,11 +57,13 @@ app.get("/posts/user/:userId", async (req, res) => {
     `SELECT
         users.id as userId,
         users.profile_iamge as userProfileImage,
-        JSON_ARRAYAGG(JSON_OBJECT(
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
           "postingId" , posts.id,
           "postingImage", posts.imageurl,
-          "postContent", posts.content)) as postings
-        FROM posts
+          "postContent", posts.content)
+          ) as postings
+      FROM posts
       INNER JOIN users ON users.id = posts.user_id
       WHERE posts.user_id = ?
       GROUP BY posts.user_id;
