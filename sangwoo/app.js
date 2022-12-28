@@ -120,14 +120,28 @@ app.patch('/modifypost/:id', async (req, res) => {
                     p.posting_content AS postingContent
                     FROM users u
                     INNER JOIN posts p
-                    ON u.id = p.user_id = 1
+                    ON u.id = p.user_id
                     WHERE u.id = ?
                 `, [ id ]
         );
         res.status(200).json({ data : updatedPost })
 });
 
-    
+
+app.delete('/postDel/:id', async (req, res) => {
+    const { id } = req.params;
+
+    await mysqlDataSource.query(
+        ` 
+        DELETE FROM posts
+        WHERE posts.id = ? 
+        `, [ id ]
+    );
+    res.status(204).json({ message : "postingDeleted" })
+})
+
+
+
 const PORT = process.env.PORT;
      
 const start = async () => {
