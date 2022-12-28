@@ -26,17 +26,29 @@ appDataSource.initialize()
     appDataSource.destroy()
   })
 
-
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'))
 
-
-// health check 
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
+app.post('/signup', async (req, res, next) => {
+  const { name, email, password } = req.body
+
+  await appDataSource.query(
+    `INSERT INTO users(
+      name,
+      email,
+      password
+      ) VALUES (?, ?, ?);
+    `,
+    [name, email, password]
+  );
+
+  res.status(201).json({ message: "successfully signed up" });
+});
 
 const PORT = process.env.PORT;
 

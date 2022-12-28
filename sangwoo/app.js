@@ -30,8 +30,23 @@ app.get("/ping", cors(), function (req, res, next) {
     res.json({ message: "pong"});
 });
 
-const PORT = process.env.PORT;
 
+// CURS - C
+app.post("/users", async (req, res, next) => {
+    const { userId, userProfileImage } = req.body
+     
+    await mysqlDataSource.query(
+        `INSERT INTO users(
+            user_id,
+            user_profile
+        ) VALUES (?, ?);
+        `, [ userId, userProfileImage ]
+        );
+    res.status(201).json({ message : "userCreated" });
+});
+    
+const PORT = process.env.PORT;
+     
 const start = async () => {
     app.listen(PORT, () => console.log(`server is listening on ${PORT}`))
 };
