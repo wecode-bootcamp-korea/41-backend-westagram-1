@@ -69,7 +69,7 @@ app.post('/posts', async (req, res) => {
   res.status(201).json({ message: "postCreated" });
 })
 
-app.get('/posts/all', async (req, res) => {
+app.get('/posts', async (req, res) => {
   await appDataSource.query(
     `SELECT
       u.id AS userId,
