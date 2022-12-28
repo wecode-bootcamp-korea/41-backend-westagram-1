@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const bcrypt = require("bcrypt");
+
 
 const { DataSource } = require('typeorm');
 
@@ -34,20 +36,24 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
-app.post('/signup', async (req, res, next) => {
-  const { name, email, password } = req.body
+app.post('/signup', async (req, res) => {
+  const { name, email, profileImage, password } = req.body
+  const saltRounds = 12;
+
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   await appDataSource.query(
     `INSERT INTO users(
       name,
       email,
+      profile_image,
       password
-      ) VALUES (?, ?, ?);
+      ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, password]
+    [name, email, profileImage, hashedPassword]
   );
 
-  res.status(201).json({ message: "successfully signed up" });
+  res.status(201).json({ message: "userCreated" });
 });
 
 const PORT = process.env.PORT;
