@@ -51,7 +51,7 @@ app.get("/posts", async (req, res) => {
   );
 });
 
-app.get("/pcheck/:userId/posts", async (req, res) => {
+app.get("/posts/user/:userId", async (req, res) => {
   const { userId } = req.params;
   const pcheck = await appDataSource.query(
     `SELECT
@@ -71,7 +71,7 @@ app.get("/pcheck/:userId/posts", async (req, res) => {
   return res.status(200).json({ data: pcheck });
 });
 
-app.post("/users", async (req, res, next) => {
+app.post("/users", async (req, res) => {
   const { name, email, password } = req.body;
 
   await appDataSource.query(
