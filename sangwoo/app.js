@@ -95,6 +95,25 @@ app.get('/posts/users/:id', async (req, res) => {
         res.status(200).json({ data: userPostingData });
     });
 
+
+app.put('/modifyUser', async (req, res) => {
+    const { userId, userName, postingId, postingTitle, postingContent } = req.body
+
+    await mysqlDataSource.query(
+        ` UPDATE users
+            SET
+                user_id = ?,
+                user_name = ?,
+                posting_id = ?,
+                posting_title = ?,
+                posting_content = ?
+                WHERE id = ?
+        `, [ userId, userName, postingId, postingTitle, postingContent]
+    );
+    res.status(201).json({ message :" successfully updated" })
+})
+
+    
 const PORT = process.env.PORT;
      
 const start = async () => {
