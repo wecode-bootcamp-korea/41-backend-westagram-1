@@ -27,7 +27,7 @@ mysqlDataSource.initialize()
  app.use(express.json());
 
 
-app.get("/ping", cors(), function (req, res, next) {
+app.get("/ping", function (req, res, next) {
     res.json({ message: "pong"});
 });
 
@@ -74,26 +74,26 @@ app.get('/allDB', async (req, res) => {
         })
 });
 
-app.get('/userDB/:id', async (req, res) => {
-    const { id } = req.params;
-    console.log(req.params)
 
-    await mysqlDataSource.query(
-        `SELECT
-        {
-            'data' : {
-                users.user_id,
-                users.user_profile
-            } 'posts' : [
-                posts.posting_id,
-                posts.posting_image,
-                posts.posting_content
-            ]
-        }
-            FROM users, posts
-        `, (err, rows) => { res.status(200).json(rows);
-        })
-});
+app.get('/posts/users/:id', async (req, res) => {
+    const { id } = req.params;
+    const userPostingData = await mysqlDataSource.query(
+        ` SELECT 
+            u.user_id AS userId,
+            u.user_profile AS userProfileImage,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT("postingId", p.posting_id, "postingImageUrl", p.posting_image, 
+                    "postingContent", p.posting_content)
+                ) AS postings
+                FROM users u
+                INNER JOIN posts p
+                ON u.id = p.user_id
+                WHERE u.id = ?
+                GROUP BY u.id 
+        `, [ id ] 
+        ); 
+        res.status(200).json({ data: userPostingData });
+    });
 
 const PORT = process.env.PORT;
      
