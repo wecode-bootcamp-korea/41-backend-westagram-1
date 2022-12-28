@@ -8,6 +8,7 @@
 ### Node Files ###
 node_modules 
 test.js
+practice.js
 
 ### Database ###
 db/schema.sql
