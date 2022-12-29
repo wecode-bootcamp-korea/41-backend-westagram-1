@@ -43,7 +43,6 @@ app.post('/signup', async (req, res) => {
   const saltRounds = 12;
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
-
   await appDataSource.query(
     `INSERT INTO users(
       name,
@@ -75,9 +74,13 @@ app.post("/signin", async (req, res) => {
   if (!userData) {
     return res.status(401).json({ message: "Invalid User" });
   }
+  //bcrypt 화 
+  const saltRounds = 12;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  const result = await bcrypt.compare(password, userData.password);
+  const result = await bcrypt.compare(password, hashedPassword);
 
+  console.log(password)
   if (!result) {
     return res.status(401).json({ message: "Invalid User" });
   }
