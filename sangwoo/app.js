@@ -48,6 +48,7 @@ app.post("/signup", async (req, res, next) => {
          res.status(201).json({ message : "userCreated" });
     });
 
+
 app.post("/posts", async (req, res, next) => {
     const { postingTitle, postingContent, postingUserId } = req.body
 
@@ -61,6 +62,7 @@ app.post("/posts", async (req, res, next) => {
     );
     res.status(201).json({ message : "postCreated" })
 });
+
 
 // CURD-R
 app.get('/allDB', async (req, res) => {
