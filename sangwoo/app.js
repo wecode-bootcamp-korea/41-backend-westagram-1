@@ -33,8 +33,8 @@ app.get("/ping", function (req, res, next) {
 
 
 // CURS - C
-app.post("/users", async (req, res, next) => {
-    const { userName, userEmail, userProfileImage, userPassword } = req.body
+app.post("/signup", async (req, res, next) => {
+    const { name, email, profile, password } = req.body
      
     await mysqlDataSource.query(
         `INSERT INTO users(
@@ -43,7 +43,7 @@ app.post("/users", async (req, res, next) => {
                  profile_image,
                  password
                  ) VALUES (?, ?, ?, ?);
-                 `, [ userName, userEmail, userProfileImage, userPassword ]
+                 `, [ name, email, profile, password ]
         );
          res.status(201).json({ message : "userCreated" });
     });
