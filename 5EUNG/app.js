@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const bcrypt = require("bcrypt");
+
 
 const { DataSource } = require('typeorm');
 
@@ -26,7 +28,6 @@ appDataSource.initialize()
     appDataSource.destroy()
   })
 
-
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'))
@@ -35,8 +36,16 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
+<<<<<<< HEAD
 app.post('/signup', async (req, res, next) => {
   const { name, email, profileImage, password } = req.body
+=======
+app.post('/signup', async (req, res) => {
+  const { name, email, profileImage, password } = req.body
+  const saltRounds = 12;
+
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+>>>>>>> main
 
   await appDataSource.query(
     `INSERT INTO users(
@@ -46,14 +55,21 @@ app.post('/signup', async (req, res, next) => {
       password
       ) VALUES (?, ?, ?, ?);
     `,
+<<<<<<< HEAD
     [name, email, profileImage, password]
+=======
+    [name, email, profileImage, hashedPassword]
+>>>>>>> main
   );
 
-  res.status(201).json({ message: "successfully signed up" });
+  res.status(201).json({ message: "userCreated" });
 });
+<<<<<<< HEAD
 
 app.post('/posts', async (req, res) => {
   const { title, content, postImage, userId } = req.body
+=======
+>>>>>>> main
 
   await appDataSource.query(
     `INSERT INTO posts(
