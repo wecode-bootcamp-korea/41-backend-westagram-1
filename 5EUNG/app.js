@@ -61,12 +61,11 @@ app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
   const [userData] = await appDataSource.query(
-    `SELECT
+    `
+    SELECT
       *
-    FROM 
-      users
-    WHERE 
-      email = ?`,
+    FROM users
+    WHERE email = ?`,
     [email]
   );
 
