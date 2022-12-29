@@ -36,16 +36,11 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" })
 });
 
-<<<<<<< HEAD
-app.post('/signup', async (req, res, next) => {
-  const { name, email, profileImage, password } = req.body
-=======
 app.post('/signup', async (req, res) => {
   const { name, email, profileImage, password } = req.body
   const saltRounds = 12;
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
->>>>>>> main
 
   await appDataSource.query(
     `INSERT INTO users(
@@ -55,21 +50,14 @@ app.post('/signup', async (req, res) => {
       password
       ) VALUES (?, ?, ?, ?);
     `,
-<<<<<<< HEAD
-    [name, email, profileImage, password]
-=======
     [name, email, profileImage, hashedPassword]
->>>>>>> main
   );
 
   res.status(201).json({ message: "userCreated" });
 });
-<<<<<<< HEAD
 
 app.post('/posts', async (req, res) => {
   const { title, content, postImage, userId } = req.body
-=======
->>>>>>> main
 
   await appDataSource.query(
     `INSERT INTO posts(

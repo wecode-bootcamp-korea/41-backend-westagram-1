@@ -1,5 +1,4 @@
 -- migrate:up
-<<<<<<< HEAD
 CREATE TABLE users(
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -9,13 +8,6 @@ CREATE TABLE users(
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT users_ukey UNIQUE (email)
-=======
-create table users (
-  id int not null auto_increment primary key,
-  name varchar(255) not null,
-  email varchar(255) not null,
-  password varchar(255) not null
->>>>>>> main
 )
 
 
