@@ -1,5 +1,5 @@
 {
-  "name": "seungki",
+  "name": "myapp",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -11,14 +11,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dbmate": "^1.0.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
+    "tree": "^0.1.3",
     "typeorm": "^0.3.11"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
