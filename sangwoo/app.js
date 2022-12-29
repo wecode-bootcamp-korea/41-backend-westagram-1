@@ -74,7 +74,7 @@ app.get('/allDB', async (req, res) => {
         })
 });
 
-
+//
 app.get('/posts/users/:id', async (req, res) => {
     const { id } = req.params;
     const userPostingData = await mysqlDataSource.query(
@@ -94,7 +94,8 @@ app.get('/posts/users/:id', async (req, res) => {
         ); 
         res.status(200).json({ data: userPostingData });
     });
-
+// FROM u , INNER JOIN P = 유저와 포스트에서 값을 가져오겠다.
+// 그 기준은 ON u.id = p.user_id 유저의 아이디와 포스트의 유저아이디 값에서.
 
 app.patch('/modifypost/:id', async (req, res) => {
     const { id } = req.params;
@@ -140,6 +141,20 @@ app.delete('/postDel/:id', async (req, res) => {
     res.status(204).json({ message : "postingDeleted" })
 })
 
+// Assignment 8 좋아요 엔드포인트
+app.post("/likes/", async function (req, res) {
+    const { userId, postId } = req.body; 
+
+    await mysqlDataSource.query(
+        `
+        INSERT INTO likes (
+                likes.user_id, 
+                likes.post_id
+        ) VALUES (?, ?)
+    `, [ userId, postId ]
+    );
+    res.status(201).json({ message: "likeCreated" });
+})
 
 
 const PORT = process.env.PORT;
