@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const { DataSource } = require("typeorm");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { response } = require("express");
 
 const app = express();
 
@@ -76,7 +77,7 @@ app.get("/posts/user/:userId", async (req, res) => {
 });
 
 app.post("/users", async (req, res) => {
-  const { name, email, profile_iamge, password } = req.body;
+  const { email, profile_iamge, password } = req.body;
   const saltRounds = 12;
 
   const makeHash = async (password, saltRounds) => {
@@ -85,22 +86,21 @@ app.post("/users", async (req, res) => {
 
   const hashedPassword = await makeHash(password, saltRounds);
 
-  await appDataSource.query(
+  const user = await appDataSource.query(
     `INSERT INTO users (
-      name,
       email,
       profile_iamge,
       password
-    ) VALUES (?, ?, ?, ?);
+    ) VALUES (?, ?, ?);
     `,
-    [name, email, profile_iamge, hashedPassword]
+    [email, profile_iamge, hashedPassword]
   );
 
-  res.status(201).json({ message: "userCreated" });
+  res.status(201).json({ message: user });
 });
 
 app.post("/posts", async (req, res) => {
-  const { title, content, user_id, image_url } = req.body;
+  const { title, content, image_url } = req.body;
 
   await appDataSource.query(
     `INSERT INTO posts (
@@ -116,16 +116,11 @@ app.post("/posts", async (req, res) => {
   res.status(201).json({ message: "postCreated" });
 });
 
-app.post("/signIn", async (req, res) => {
+app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
   const [userData] = await appDataSource.query(
-    `SELECT
-      *
-    FROM
-      users
-    WHERE
-      email = ?`,
+    `SELECT * FROM users WHERE email = ?`,
     [email]
   );
 
@@ -139,7 +134,10 @@ app.post("/signIn", async (req, res) => {
     return res.status(401).json({ message: "Invalid User" });
   }
 
-  const jwtToken = jwt.sign({ userId: userData.id }, process.env.secretKey);
+  const jwtToken = await jwt.sign(
+    { userId: userData.id },
+    process.env.SECRETKEY
+  );
 
   return res.status(200).json({ accessToken: jwtToken });
 });
