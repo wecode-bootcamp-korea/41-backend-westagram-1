@@ -34,17 +34,19 @@ app.get("/ping", cors(), function (req, res, next) {
 
 // CURS - C
 app.post("/users", async (req, res, next) => {
-    const { userId, userProfileImage } = req.body
+    const { userName, userEmail, userProfileImage, userPassword } = req.body
      
     await mysqlDataSource.query(
         `INSERT INTO users(
-            user_id,
-            user_profile
-        ) VALUES (?, ?);
-        `, [ userId, userProfileImage ]
+                 name,
+                 email,
+                 profile_image,
+                 password
+                 ) VALUES (?, ?, ?, ?);
+                 `, [ userName, userEmail, userProfileImage, userPassword ]
         );
-    res.status(201).json({ message : "userCreated" });
-});
+         res.status(201).json({ message : "userCreated" });
+    });
     
 const PORT = process.env.PORT;
      
