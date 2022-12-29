@@ -78,7 +78,6 @@ app.post("/signin", async (req, res) => {
 
   const result = await bcrypt.compare(password, hashedPassword);
 
-  console.log(password)
   if (!result) {
     return res.status(401).json({ message: "Invalid User" });
   }
