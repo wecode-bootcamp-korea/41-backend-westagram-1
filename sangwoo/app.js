@@ -34,8 +34,12 @@ app.get("/ping", cors(), function (req, res, next) {
 
 // CURS - C
 app.post("/users", async (req, res, next) => {
-    const { userName, userEmail, userProfileImage, userPassword } = req.body
-     
+    const { userName, userEmail, userProfileImage, password } = req.body
+
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+
     await mysqlDataSource.query(
         `INSERT INTO users(
                  name,
@@ -43,7 +47,7 @@ app.post("/users", async (req, res, next) => {
                  profile_image,
                  password
                  ) VALUES (?, ?, ?, ?);
-                 `, [ userName, userEmail, userProfileImage, userPassword ]
+                 `, [ userName, userEmail, userProfileImage, hashedPassword ]
         );
          res.status(201).json({ message : "userCreated" });
     });
