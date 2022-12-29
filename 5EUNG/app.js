@@ -57,7 +57,6 @@ app.post('/signup', async (req, res) => {
   res.status(201).json({ message: "userCreated" });
 });
 
-//
 app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
@@ -74,7 +73,6 @@ app.post("/signin", async (req, res) => {
   if (!userData) {
     return res.status(401).json({ message: "Invalid User" });
   }
-  //bcrypt 화 
   const saltRounds = 12;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -90,7 +88,6 @@ app.post("/signin", async (req, res) => {
   return res.status(200).json({ accessToken: jwtToken });
 
 })
-//
 
 const PORT = process.env.PORT;
 
