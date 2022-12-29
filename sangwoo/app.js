@@ -94,10 +94,9 @@ app.get('/posts/users/:id', async (req, res) => {
         ); 
         res.status(200).json({ data: userPostingData });
     });
-// FROM u , INNER JOIN P = 유저와 포스트에서 값을 가져오겠다.
-// 그 기준은 ON u.id = p.user_id 유저의 아이디와 포스트의 유저아이디 값에서.
 
-app.patch('/modifypost/:id', async (req, res) => {
+
+app.patch('/post/:id', async (req, res) => {
     const { id } = req.params;
 
     const { postingTitle, postingContent } = req.body;
@@ -129,7 +128,7 @@ app.patch('/modifypost/:id', async (req, res) => {
 });
 
 
-app.delete('/postDel/:id', async (req, res) => {
+app.delete('/post/:id', async (req, res) => {
     const { id } = req.params;
 
     await mysqlDataSource.query(
