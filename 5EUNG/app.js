@@ -82,14 +82,15 @@ app.get('/posts', async (req, res) => {
       p.post_image AS postingImageUrl,
       p.content AS postingContent
    FROM users u
-   INNER JOIN posts p ON u.id = p.user_id`,
+   INNER JOIN posts p 
+   ON u.id = p.user_id`,
     (err, rows) => {
       res.status(200).json({ data: rows });
     }
   );
 });
 
-app.get('/user_post/userId/:userId', async (req, res) => {
+app.get('/post/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
   const [userPostList] = await appDataSource.query(
@@ -113,7 +114,6 @@ app.get('/user_post/userId/:userId', async (req, res) => {
   res.status(200).json({ data: userPostList });
 });
 
-//////////////////////
 app.patch("/user/post/:id", async function (req, res) {
   const { postId } = req.params;
   const { title, content, postImage } = req.body;
@@ -142,7 +142,7 @@ app.patch("/user/post/:id", async function (req, res) {
 
   res.status(200).json({ data: updatedPost });
 });
-/////////////////////
+
 app.delete('/post/:postId', async (req, res) => {
   const { postId } = req.params;
 
@@ -155,7 +155,7 @@ app.delete('/post/:postId', async (req, res) => {
   );
   res.status(200).json({ message: 'postingDeleted' });
 });
-//////////////////////
+
 app.post('/likes', async (req, res) => {
   const { userId, postId } = req.body;
 
@@ -188,7 +188,7 @@ app.post('/likes', async (req, res) => {
   }
   res.status(200).json({ message: 'likeCreated' });
 });
-//////////////////////
+
 const PORT = process.env.PORT;
 
 const start = async () => {
