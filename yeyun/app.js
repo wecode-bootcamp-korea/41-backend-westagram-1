@@ -79,7 +79,7 @@ app.post("/users", async (req, res) => {
   const saltRounds = 12;
 
   const makeHash = async (password, saltRounds) => {
-    return await bcrypt.hash(password, saltRounds);
+    return await bcrypt.hash(password, saltRoundsds);
   };
 
   const hashedPassword = await makeHash(password, saltRounds);
