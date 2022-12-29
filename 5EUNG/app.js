@@ -109,6 +109,82 @@ app.get('/user_post/userId/:userId', async (req, res) => {
   res.status(200).json({ data: userPostList });
 });
 
+//////////////////////
+app.patch("/user/post/:id", async function (req, res) {
+  const { postId } = req.params;
+  const { title, content, postImage } = req.body;
+
+  await appDataSource.query(`
+      UPDATE posts
+          SET
+              title = ?,
+              content = ?,
+              post_image = ?
+  `
+    , [title, content, postImage, postId]);
+
+  const updatedPost = await appDataSource.query(
+    `SELECT
+          u.id AS userId, 
+          u.name AS userName, 
+          p.id AS postingId, 
+          p.title AS postingTitle, 
+          p.content AS postingContent
+      FROM users u
+      INNER JOIN posts p
+      ON u.id = p.user_id = 1
+  `
+    , [postId]);
+
+  res.status(200).json({ data: updatedPost });
+});
+/////////////////////
+app.delete('/post/:postId', async (req, res) => {
+  const { postId } = req.params;
+
+  await appDataSource.query(
+    `
+    DELETE FROM posts
+    WHERE id = ?
+    `,
+    [postId]
+  );
+  res.status(200).json({ message: 'postingDeleted' });
+});
+//////////////////////
+app.post('/likes', async (req, res) => {
+  const { userId, postId } = req.body;
+
+  const [likes] = await appDataSource.query(
+    `SELECT
+      id
+    FROM likes
+    WHERE user_id = ?
+    AND post_id = ?
+      `,
+    [userId, postId]
+  );
+
+  if (!likes) {
+    await appDataSource.query(
+      `INSERT INTO likes(
+          user_id,
+          post_id
+      ) VALUES (?, ?);
+      `,
+      [userId, postId]
+    );
+  } else {
+    await appDataSource.query(
+      `DELETE FROM likes
+        WHERE likes.id = ?
+        `,
+      [likes.id]
+    );
+  }
+  res.status(200).json({ message: 'likeCreated' });
+});
+//////////////////////
 const PORT = process.env.PORT;
 
 const start = async () => {
