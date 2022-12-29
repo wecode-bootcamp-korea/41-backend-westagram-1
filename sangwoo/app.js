@@ -34,56 +34,58 @@ app.get("/ping", function (req, res, next) {
 
 // CURS - C
 app.post("/users", async (req, res, next) => {
-    const { userId, userProfileImage } = req.body
+    const { userName, userEmail, userProfileImage, userPassword } = req.body
      
     await mysqlDataSource.query(
         `INSERT INTO users(
-                 user_id,
-                 user_profile
-                 ) VALUES (?, ?);
-                 `, [ userId, userProfileImage ]
+                 name,
+                 email,
+                 profile_image,
+                 password
+                 ) VALUES (?, ?, ?, ?);
+                 `, [ userName, userEmail, userProfileImage, userPassword ]
         );
          res.status(201).json({ message : "userCreated" });
     });
 
 app.post("/posts", async (req, res, next) => {
-    const { postingId, postingImageUrl, postingContent } = req.body
+    const { postingTitle, postingContent, postingUserId } = req.body
 
     await mysqlDataSource.query(
         `INSERT INTO posts(
-                posting_id,
-                posting_image,
-                posting_content
+                title,
+                content,
+                user_id
             )  VALUES (?, ?, ?);
-            `, [ postingId, postingImageUrl, postingContent ]
+            `, [ postingTitle, postingContent, postingUserId ]
     );
     res.status(201).json({ message : "postCreated" })
 });
 
-// CURD-U
+// CURD-R
 app.get('/allDB', async (req, res) => {
     await mysqlDataSource.query(
-        `SELECT
-               users.user_id,
-               users.user_profile,
-               posts.posting_id,
-               posts.posting_image,
-               posts.posting_content
+        ` SELECT
+               u.id,
+               u.profile_image,
+               p.id,
+               p.title,
+               p.content
             FROM users, posts
             `, (err, rows) => { res.status(200).json(rows);
         })
 });
 
-//
+// CURD-R
 app.get('/posts/users/:id', async (req, res) => {
     const { id } = req.params;
     const userPostingData = await mysqlDataSource.query(
         ` SELECT 
-            u.user_id AS userId,
-            u.user_profile AS userProfileImage,
+            u.id AS userId,
+            u.profile_image userProfileImage,
                 JSON_ARRAYAGG(
-                    JSON_OBJECT("postingId", p.posting_id, "postingImageUrl", p.posting_image, 
-                    "postingContent", p.posting_content)
+                    JSON_OBJECT("postingId", p.id, "postingImageUrl", p.title, 
+                    "postingContent", p.content)
                 ) AS postings
                 FROM users u
                 INNER JOIN posts p
@@ -101,28 +103,24 @@ app.patch('/post/:id', async (req, res) => {
 
     const { postingTitle, postingContent } = req.body;
 
-    await mysqlDataSource.query(
+   const updatedPost = await mysqlDataSource.query(
         `
         UPDATE posts
            SET
-              posting_title = ?,
-              posting_content = ?
-              WHERE id = ?
-        `, [ postingTitle, postingContent, id ]);
-
-        const updatedPost = await mysqlDataSource.query(
-                ` 
-                SELECT
-                    u.user_id AS userId,
-                    u.user_name AS userName,
-                    p.posting_id AS postingId,
-                    p.posting_title AS postingTitle,
-                    p.posting_content AS postingContent
-                    FROM users u
-                    INNER JOIN posts p
-                    ON u.id = p.user_id
-                    WHERE u.id = ?
-                `, [ id ]
+              title = ?,
+              content = ?,
+              WHERE id = ?;
+            SELECT
+            u.id AS userId,
+            u.name AS userName,
+            p.id AS postingId,
+            p.title AS postingTitle,
+            p.content AS postingContent
+            FROM users u
+            INNER JOIN posts p
+            ON u.id = p.user_id
+            WHERE u.id = ?;
+        `, [ postingTitle, postingContent, id, id ]
         );
         res.status(200).json({ data : updatedPost })
 });
@@ -132,7 +130,7 @@ app.delete('/post/:id', async (req, res) => {
     const { id } = req.params;
 
     await mysqlDataSource.query(
-        ` 
+        `
         DELETE FROM posts
         WHERE posts.id = ? 
         `, [ id ]
@@ -141,14 +139,14 @@ app.delete('/post/:id', async (req, res) => {
 })
 
 // Assignment 8 좋아요 엔드포인트
-app.post("/likes/", async function (req, res) {
-    const { userId, postId } = req.body; 
+app.post("/likes/:id", async (req, res) => {
+    const { postId, userId } = req.body;
 
     await mysqlDataSource.query(
         `
         INSERT INTO likes (
-                likes.user_id, 
-                likes.post_id
+            user_id,
+            post_id
         ) VALUES (?, ?)
     `, [ userId, postId ]
     );
