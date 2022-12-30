@@ -55,15 +55,15 @@ app.post("/users", async (req, res, next) => {
 
 
 app.post("/signin", async (req, res) => {
-    const { email, password } = req.body;
+    const { id, password } = req.body;
 
     const [userData] = await mysqlDataSource.query(
         `
         SELECT
           *
         FROM users
-        WHERE email = ?
-        `, [email]
+        WHERE id = ?
+        `, [id]
     );
     if (!userData) {
         return res.status(401).json({ message: "Invalid User"});
@@ -78,7 +78,9 @@ app.post("/signin", async (req, res) => {
         return res.status(401).json({ message : "Invalid User"});
     }
     
-    const jwtToken = jwt.sign({ userId : userData.id }, process.env.secretkey);
+    const payload = { userId : userData.id} 
+
+    const jwtToken = jwt.sign(payload , process.env.secretkey);
 
     return res.status(200).json({ accessToken : jwtToken});
 
