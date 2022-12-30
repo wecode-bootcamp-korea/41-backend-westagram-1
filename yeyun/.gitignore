@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+schema.sql
+auth.js
+
+=======
 .env
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,vim,webstorm,macos,linux,windows,zsh,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,vim,webstorm,macos,linux,windows,zsh,node
@@ -14,6 +19,7 @@
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
 
+>>>>>>> main
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
