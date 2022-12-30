@@ -84,7 +84,7 @@ app.post('/signin', async (req, res) => {
 });
 
 // 게시물 등록하기 & 로그인 한 사용자만 게시글 등록하기
-app.post('/created', validateToken, async (req, res) => {
+app.post('/posts', validateToken, async (req, res) => {
   const { title, content, postImage } = req.body;
 
   await mysqlDatabase.query(
@@ -112,7 +112,11 @@ app.get('/posts', async (req, res) => {
     FROM users u
     INNER JOIN posts p ON u.id = p.user_id`,
     (err, rows) => {
-      res.status(200).json({ data: rows });
+      if (err) {
+        console.error(err);
+      } else {
+        res.status(200).json({ data: rows });
+      }
     }
   );
 });
