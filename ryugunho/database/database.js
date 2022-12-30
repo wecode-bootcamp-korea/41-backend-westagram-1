@@ -12,13 +12,5 @@ const appDataSource = new DataSource({
     logging: process.env.DB_LOGGING
 });
 
-appDataSource.initialize().then(() => {
-    console.log("Your database is on fire!!!");
-}).catch((err) => {
-    console.log(err.message);
-    appDataSource.destroy();
-})
 
-module.exports = {
-    appDataSource
-}
+module.exports = appDataSource

@@ -1,15 +1,16 @@
 const userService = require("../service/userService");
+const hashPasswordHandler = require("../utils/bcrypt");
 
 const jwt = require("jsonwebtoken");
 
-class UserController {
-
-    async signUp(req, res) {
+async function signUp(req, res, next) {
+    try {
         const user = req.body;
-
-        const userServiceHandler = new userService(user);
-        const userData = userServiceHandler.signUp();
-
+        if (!user) {
+            return res.json({ message: "no Data!!!"});
+        }
+        const userData = userService.signUp(user);
+    
         if (!userData) {
             return res.json({ message: "Creating User Failed!!!" });
         } 
@@ -17,23 +18,43 @@ class UserController {
         else {
             res.status(200).json({ messsage: "userCreated!" });
         }
+    } catch(err) {
+        next(err);
     }
 
-    async signIn(req, res) {
-        const user  = req.body;
-
-        const userServiceHandler = new userService(user);
-        const jwtToken = await userServiceHandler.signIn();
-        
-        return res.status(200).json({ accessToken: jwtToken });
-    }
-
-    async displayAllPosts(req, res) {
-        const { userId } = req.params;
-        const userPostingData = await userService.displayAllPosts(userId);
-
-        res.status(200).json({ data: userPostingData });
-    }
 }
 
-module.exports = UserController;
+async function signIn(req, res, next) {
+    try {
+        const user  = req.body;
+
+        const userData = await userService.signIn(user);
+        
+        if (!userData) {
+            return res.status(401).json({ message: "Invalid user!!! Maybe create one?"});
+        }
+    
+        const hash = new hashPasswordHandler(
+            user.password, 
+            userData.password
+        );
+    
+        const passwordsAreEqual = await hash.decode();
+    
+        if (!passwordsAreEqual) { 
+            return res.status(401).json({ message: "Invalid password!!!"});
+        }
+    
+        const jwtToken = jwt.sign({ userId: userData.id }, process.env.secretKey);
+    
+        return res.status(200).json({ accessToken: jwtToken });
+    } catch(err) {
+        next(err);
+    }
+
+}
+
+module.exports = {
+    signUp: signUp,
+    signIn: signIn
+}
