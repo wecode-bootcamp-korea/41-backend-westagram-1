@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
 const { DataSource } = require('typeorm')
 
@@ -51,7 +52,38 @@ app.post("/users", async (req, res, next) => {
         );
          res.status(201).json({ message : "userCreated" });
     });
+
+
+app.post("/signin", async (req, res) => {
+    const { email, password } = req.body;
+
+    const [userData] = await mysqlDataSource.query(
+        `
+        SELECT
+          *
+        FROM users
+        WHERE email = ?
+        `, [email]
+    );
+    if (!userData) {
+        return res.status(401).json({ message: "Invalid User"});
+    }
     
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const result = await bcrypt.compare(password, hashedPassword);
+
+    if (!result) {
+        return res.status(401).json({ message : "Invalid User"});
+    }
+    
+    const jwtToken = jwt.sign({ userId : userData.id }, process.env.secretkey);
+
+    return res.status(200).json({ accessToken : jwtToken});
+
+});
+
 const PORT = process.env.PORT;
      
 const start = async () => {
