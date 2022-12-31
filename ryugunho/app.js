@@ -24,25 +24,22 @@ app.get("/ping", function(req, res) {
 
 
 app.use((error, req, res, next) => {
-    console.error(error);
+    res.status(404).json({ message: error.message });
 })
 
 port = process.env.PORT;
 
-
 const start = async () => {
-    await appDataSource.initialize();
-    app.listen(port);
-    console.log(`Your server is listening on ${port}`);
-};
-
+    try {
+        await appDataSource.initialize().then(() => {
+            console.log("Your Database is On FIRE!!!");
+        });
+        app.listen(port, () => {
+            console.log(`Your server is listening on ${port}`);
+        })
+    } catch (err) {
+    console.error(err)
+    }
+}
 
 start();
-
-
-
-
-
-
-
-

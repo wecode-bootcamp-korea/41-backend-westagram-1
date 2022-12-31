@@ -12,5 +12,4 @@ const appDataSource = new DataSource({
     logging: process.env.DB_LOGGING
 });
 
-
-module.exports = appDataSource
+module.exports = appDataSource;

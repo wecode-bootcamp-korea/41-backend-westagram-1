@@ -9,7 +9,8 @@ async function signUp(req, res, next) {
         if (!user) {
             return res.json({ message: "no Data!!!"});
         }
-        const userData = userService.signUp(user);
+
+        const userData = await userService.signUp(user);
     
         if (!userData) {
             return res.json({ message: "Creating User Failed!!!" });
